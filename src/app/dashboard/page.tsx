@@ -17,7 +17,7 @@ export default function DashboardPage() {
     <div className="flex min-h-screen bg-(--background)">
       {/* Sidebar */}
       <motion.aside
-        className="w-64 bg-(--card) border-r border-(--border) flex flex-col"
+        className="w-64 bg-card border-r border-(--border) flex flex-col"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}

@@ -31,6 +31,12 @@ export default function MainNavbar() {
           >
             Posts
           </Link>
+          <Link
+            href="/products"
+            className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+          >
+            Products
+          </Link>
           {isSignedIn && (
             <Link
               href="/dashboard"
