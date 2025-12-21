@@ -6,7 +6,11 @@ import Link from 'next/link';
 import ProductsBrands from '@/components/features/MainPageProducts/ProductsBrands';
 import { AnimatedTestimonials } from '@/components/features/MainPageProducts/Testimonial';
 import FullWidthCarousel from '@/components/features/MainPageProducts/ProductCarousel';
+import ProductCard from '../MainPageProducts/ProductCard';
+import zipLogo from '@/public/icons/zip-logo.png';
 
+import Image from 'next/image';
+import { NEW_PRODUCTS } from '@/core/mock/ProductsData';
 type Props = {};
 
 const ProductsMain = (props: Props) => {
@@ -19,7 +23,7 @@ const ProductsMain = (props: Props) => {
     <>
       {/* Hero Section */}
       <motion.section
-        className="w-full py-2 sm:py-16 md:py-24 lg:py-8 bg-background relative overflow-hidden"
+        className="w-full py-2 sm:py-4 md:py-12 lg:py-8 bg-background relative overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -84,7 +88,7 @@ const ProductsMain = (props: Props) => {
       </motion.section>
       {/* Features Section */}
       <motion.section
-        className="w-full py-2 sm:py-16 md:py-24 bg-(--card)"
+        className="w-full py-2 sm:py-4 md:py-12 bg-card"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -93,10 +97,11 @@ const ProductsMain = (props: Props) => {
         <div className="container px-4 sm:px-6 max-w-full">
           <NewProducts />
         </div>
-        <div className="py-3">
-          <h1 className="text-center font-semibold text-base text-indigo-700">
-            own it now, up to 6 months interest free
-            <span className="mx-1 underline text-sm text-indigo-500 font-medium">
+        <div className="my-6 lg:my-10 flex flex-row justify-center items-center space-x-4">
+          <Image src={zipLogo} loading="lazy" alt="zip-logo"></Image>
+          <h1 className="text-center font-semibold text-lg text-indigo-600">
+            Own it now, up to 6 months interest free
+            <span className="mx-1 hover:underline text-sm text-indigo-900 font-medium">
               learn more
             </span>
           </h1>
@@ -104,8 +109,25 @@ const ProductsMain = (props: Props) => {
         <div className="w-full relative grid grid-cols-12 gap-4">
           <div className="col-span-3 static">side items</div>
           <div className="col-span-9">
+            <div className="grid grid-cols-12 gap-2">
+              {NEW_PRODUCTS.map((product) => (
+                <div className="lg:col-span-3 sm:col-span-2" key={product.id}>
+                  <ProductCard
+                    image={product.image}
+                    name={product.name}
+                    price={product.price}
+                    discountPrice={product.discountPrice}
+                    inStock={product.inStock}
+                    onDetails={() => {
+                      // Handle product details navigation
+                      console.log('Product details:', product.id);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
             produc card
-            <Link href={'products'}>Product ctalog</Link>
+            {/* <Link href={'products'}>Product ctalog</Link> */}
           </div>
         </div>
         <div className="my-6">
