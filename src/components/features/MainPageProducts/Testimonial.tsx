@@ -90,7 +90,7 @@ export function AnimatedTestimonials() {
   }
 
   return (
-    <section className="w-full py-20 px-4 bg-secondary/30">
+    <section className="w-full py-20 px-16 bg-secondary/30">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Loved by teams worldwide</h2>

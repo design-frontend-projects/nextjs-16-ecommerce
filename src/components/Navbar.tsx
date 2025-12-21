@@ -56,7 +56,7 @@ export default function MainNavbar() {
               <Link
                 href={ele.href}
                 key={ele.href}
-                className="text-sm font-medium text-ecommerce-primary hover:text-ecommerce-secondary transition-colors duration-200"
+                className="text-sm font-medium text-ecommerce-primary dark:text-white hover:text-ecommerce-secondary transition-colors duration-200"
               >
                 {ele.label}
               </Link>
@@ -65,7 +65,7 @@ export default function MainNavbar() {
           <Button
             size={'sm'}
             variant={'outline'}
-            className="border-ecommerce-primary text-ecommerce-primary p-x-2 py-1 text-xs font-bold"
+            className="border-ecommerce-primary text-ecommerce-primary dark:bg-white dark:text-ecommerce-primary p-x-2 py-1 text-xs font-bold"
           >
             Our deals
           </Button>
@@ -103,7 +103,7 @@ export default function MainNavbar() {
             className="bg-ecommerce-primary text-white dark:bg-blue-600"
           >
             <ShoppingBasket />
-            <span className='mx-1'>22</span>
+            <span className="mx-1">22</span>
           </Badge>
           <SearchIcon />
           <ThemeToggle />
@@ -125,11 +125,11 @@ export default function MainNavbar() {
           <div className="fixed inset-x-0 top-16 z-50 bg-(--background) border-b border-(--border) shadow-lg md:hidden animate-in slide-in-from-top duration-300 max-w-full">
             <div className="container py-6 flex flex-col space-y-4 px-4 sm:px-6 max-w-full">
               <Link
-                href="/posts"
+                href="/settings"
                 className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
                 onClick={handleToggle}
               >
-                Posts
+                Settings
               </Link>
               {isSignedIn && (
                 <Link
