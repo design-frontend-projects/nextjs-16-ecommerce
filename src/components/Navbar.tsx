@@ -83,7 +83,8 @@ export default function MainNavbar() {
           {isSignedIn ? (
             <>
               <span className="text-sm font-medium text-(--foreground)">
-                {user?.firstName || user?.emailAddresses[0].emailAddress}
+                {user?.firstName + '' + user?.lastName ||
+                  user?.emailAddresses[0].emailAddress}
               </span>
               <SignOutButton>
                 <button className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200">
