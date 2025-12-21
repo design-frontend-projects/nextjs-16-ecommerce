@@ -1,13 +1,32 @@
 'use client';
 
 import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
-import { Github, Menu, X } from 'lucide-react';
+import { Menu, SearchIcon, Settings, ShoppingBasket, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-
+// import { useIsMobile } from '@/hooks/use-mobile';
 import ThemeToggle from './ThemeToggle';
-
+import Image from 'next/image';
+import logo from '@/public/icons/ecommerce-logo.png';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 export default function MainNavbar() {
+  const [mainNavLinks, setMainNavLinks] = useState<
+    { href: string; label: string }[]
+  >([
+    {
+      href: '/laptops',
+      label: 'Laptops',
+    },
+    {
+      href: '/desktops',
+      label: 'Desktops',
+    },
+    {
+      href: '/tablets',
+      label: 'Tablets',
+    },
+  ]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isSignedIn, user } = useUser();
 
@@ -19,24 +38,40 @@ export default function MainNavbar() {
     <header className="sticky top-0 z-50 w-full bg-(--background)/85 backdrop-blur-lg border-b border-(--border) shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 max-w-full">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl sm:text-2xl font-bold font-poppins bg-linear-to-r from-(--primary) to-(--accent) bg-clip-text text-transparent">
+          {/* <span className="text-xl sm:text-2xl font-bold font-poppins bg-linear-to-r from-(--primary) to-(--accent) bg-clip-text text-transparent">
             NextBoiler
-          </span>
+          </span> */}
+          <Image
+            src={logo}
+            alt="logo"
+            loading="lazy"
+            width={30}
+            height={30}
+          ></Image>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
-          <Link
-            href="/posts"
-            className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+        <nav className="flex flex-row gap-4 items-center">
+          {mainNavLinks &&
+            mainNavLinks.map((ele) => (
+              <Link
+                href={ele.href}
+                key={ele.href}
+                className="text-sm font-medium text-ecommerce-primary hover:text-ecommerce-secondary transition-colors duration-200"
+              >
+                {ele.label}
+              </Link>
+            ))}
+
+          <Button
+            size={'sm'}
+            variant={'outline'}
+            className="border-ecommerce-primary text-ecommerce-primary p-x-2 py-1 text-xs font-bold"
           >
-            Posts
-          </Link>
-          <Link
-            href="/products"
-            className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
-          >
-            Products
-          </Link>
+            Our deals
+          </Button>
+        </nav>
+
+        <nav className="hidden md:flex items-center gap-3">
           {isSignedIn && (
             <Link
               href="/dashboard"
@@ -45,14 +80,6 @@ export default function MainNavbar() {
               Dashboard
             </Link>
           )}
-          <Link
-            href="https://github.com/AnwarHossainSR/nextjs-15-template"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-(--foreground) hover:text-(--primary) transition-colors duration-200"
-          >
-            <Github className="h-5 w-5" />
-          </Link>
           {isSignedIn ? (
             <>
               <span className="text-sm font-medium text-(--foreground)">
@@ -71,6 +98,14 @@ export default function MainNavbar() {
               </button>
             </SignInButton>
           )}
+          <Badge
+            variant="secondary"
+            className="bg-ecommerce-primary text-white dark:bg-blue-600"
+          >
+            <ShoppingBasket />
+            <span className='mx-1'>22</span>
+          </Badge>
+          <SearchIcon />
           <ThemeToggle />
         </nav>
 
@@ -107,13 +142,13 @@ export default function MainNavbar() {
               )}
               <div className="flex items-center justify-between">
                 <Link
-                  href="https://github.com/AnwarHossainSR/nextjs-15-template"
+                  href=""
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-(--foreground) hover:text-(--primary) transition-colors duration-200"
                   onClick={handleToggle}
                 >
-                  <Github className="h-5 w-5" />
+                  <Settings className="h-5 w-5" />
                 </Link>
                 {isSignedIn ? (
                   <>

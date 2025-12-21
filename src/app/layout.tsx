@@ -59,7 +59,7 @@ function RootLayoutContent({ children }: ChildrenProps) {
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
-            <div className="flex min-h-screen bg-(--background) w-full overflow-x-hidden">
+            <div className="flex min-h-screen bg-slate-100 w-full overflow-x-hidden">
               <div className="flex-1 flex flex-col w-full">
                 <MainNavbar />
                 <main className="flex-1 w-full overflow-x-hidden">
