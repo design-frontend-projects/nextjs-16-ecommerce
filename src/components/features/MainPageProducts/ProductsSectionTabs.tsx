@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { NEW_PRODUCTS } from '@/core/mock/ProductsData';
 import ProductCard from './ProductCard';
 
@@ -9,19 +10,22 @@ type Props = {
 const ProductsSectionTabs = ({ activeTab }: Props) => {
   return (
     <>
-      <Tabs defaultValue={activeTab ?? 'msi_gs'} className="col-span-full">
-        <TabsList>
-          <TabsTrigger value="msi_gs">MSI GS Series</TabsTrigger>
-          <TabsTrigger value="msi_gle">MSI GLE Series</TabsTrigger>
-          <TabsTrigger value="msi_gt">MSI GT Series</TabsTrigger>
-          <TabsTrigger value="msi_ge">MSI GE Series</TabsTrigger>
-        </TabsList>
-        <div className="grid grid-cols-12">
-          <div className="lg:col-span-3 sm:col-span-1">some data here</div>
-          <div className="lg:col-span-9 sm:col-span-1">
-            <TabsContent value="msi_gs" className="grid grid-cols-12 gap-3 p-2">
+      <Tabs defaultValue={activeTab ?? 'msi_gs'} className="col-span-full w-full">
+        <ScrollArea className="w-full">
+          <TabsList className="inline-flex w-full md:w-auto">
+            <TabsTrigger value="msi_gs">MSI GS Series</TabsTrigger>
+            <TabsTrigger value="msi_gle">MSI GLE Series</TabsTrigger>
+            <TabsTrigger value="msi_gt">MSI GT Series</TabsTrigger>
+            <TabsTrigger value="msi_ge">MSI GE Series</TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" className="md:hidden" />
+        </ScrollArea>
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
+          <div className="col-span-12 md:col-span-4 lg:col-span-3">some data here</div>
+          <div className="col-span-12 md:col-span-8 lg:col-span-9">
+            <TabsContent value="msi_gs" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2 md:p-4">
               {NEW_PRODUCTS.slice(0, 4).map((product) => (
-                <div className="lg:col-span-3 sm:col-span-1" key={product.id}>
+                <div className="w-full" key={product.id}>
                   <ProductCard
                     image={product.image}
                     name={product.name}
@@ -38,10 +42,10 @@ const ProductsSectionTabs = ({ activeTab }: Props) => {
             </TabsContent>
             <TabsContent
               value="msi_gle"
-              className="grid grid-cols-12 gap-3 p-2"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2 md:p-4"
             >
               {NEW_PRODUCTS.slice(1, 5).map((product) => (
-                <div className="lg:col-span-3 sm:col-span-2" key={product.id}>
+                <div className="w-full" key={product.id}>
                   <ProductCard
                     image={product.image}
                     name={product.name}
@@ -56,9 +60,9 @@ const ProductsSectionTabs = ({ activeTab }: Props) => {
                 </div>
               ))}
             </TabsContent>
-            <TabsContent value="msi_gt" className="grid grid-cols-12 gap-3 p-2">
+            <TabsContent value="msi_gt" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2 md:p-4">
               {NEW_PRODUCTS.slice(0, 4).map((product) => (
-                <div className="lg:col-span-3 sm:col-span-2" key={product.id}>
+                <div className="w-full" key={product.id}>
                   <ProductCard
                     image={product.image}
                     name={product.name}
@@ -73,9 +77,9 @@ const ProductsSectionTabs = ({ activeTab }: Props) => {
                 </div>
               ))}
             </TabsContent>
-            <TabsContent value="msi_ge" className="grid grid-cols-12 gap-3 p-2">
+            <TabsContent value="msi_ge" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2 md:p-4">
               {NEW_PRODUCTS.slice(2, 6).map((product) => (
-                <div className="lg:col-span-3 sm:col-span-2" key={product.id}>
+                <div className="w-full" key={product.id}>
                   <ProductCard
                     image={product.image}
                     name={product.name}

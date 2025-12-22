@@ -22,7 +22,7 @@ const ProductsMain = (props: Props) => {
     <>
       {/* Hero Section */}
       <motion.section
-        className="w-full py-2 sm:py-4 md:py-12 lg:py-8 bg-background relative overflow-hidden"
+        className="w-full py-4 md:py-8 lg:py-12 bg-background relative overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -35,48 +35,48 @@ const ProductsMain = (props: Props) => {
           >
             <FullWidthCarousel autoPlay autoPlayInterval={4000}>
               {/* Slide 1 */}
-              <div className="relative h-150 w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
-                  <h1 className="text-5xl font-bold mb-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Welcome to Our Platform
                   </h1>
-                  <p className="text-xl">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl">
                     Discover amazing features and possibilities
                   </p>
                 </div>
               </div>
 
               {/* Slide 2 */}
-              <div className="relative h-150 w-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
-                  <h1 className="text-5xl font-bold mb-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Build Something Great
                   </h1>
-                  <p className="text-xl">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl">
                     Tools and resources at your fingertips
                   </p>
                 </div>
               </div>
 
               {/* Slide 3 */}
-              <div className="relative h-150 w-full from-orange-500 to-red-600 flex bg-[url('/images/1.jpg')] items-center justify-center">
-                <div className="text-center text-white px-4 ">
-                  <h1 className="text-5xl font-bold mb-4">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full from-orange-500 to-red-600 flex bg-[url('/images/1.jpg')] items-center justify-center">
+                <div className="text-center text-white px-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Join Our Community
                   </h1>
-                  <p className="text-xl">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl">
                     Connect with thousands of creators worldwide
                   </p>
                 </div>
               </div>
 
               {/* Slide 4 */}
-              <div className="relative h-150 w-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
-                  <h1 className="text-5xl font-bold mb-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Start Your Journey
                   </h1>
-                  <p className="text-xl">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl">
                     Everything you need to succeed is here
                   </p>
                 </div>
@@ -87,7 +87,7 @@ const ProductsMain = (props: Props) => {
       </motion.section>
       {/* Features Section */}
       <motion.section
-        className="w-full py-2 sm:py-4 md:py-12 bg-card"
+        className="w-full py-4 md:py-8 lg:py-12 bg-card"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -96,28 +96,27 @@ const ProductsMain = (props: Props) => {
         <div className="container px-4 sm:px-6 max-w-full">
           <NewProducts />
         </div>
-        <div className="my-6 lg:my-10 flex flex-row justify-center items-center space-x-4">
-          <Image src={zipLogo} loading="lazy" alt="zip-logo"></Image>
-          <h1 className="text-center font-semibold text-lg text-indigo-600">
-            Own it now, up to 6 months interest free
-            <span className="mx-1 hover:underline text-sm text-indigo-900 font-medium">
-              learn more
-            </span>
-          </h1>
+        <div className="container px-4 sm:px-6 max-w-full my-4 md:my-6 lg:my-10">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
+            <Image src={zipLogo} loading="lazy" alt="zip-logo" className="h-auto w-8 sm:w-10" />
+            <h1 className="text-center font-semibold text-sm sm:text-base md:text-lg text-indigo-600">
+              Own it now, up to 6 months interest free
+              <span className="block sm:inline mx-0 sm:mx-1 hover:underline text-xs sm:text-sm text-indigo-900 font-medium">
+                learn more
+              </span>
+            </h1>
+          </div>
         </div>
-        <div className="w-full relative grid grid-cols-12 gap-4">
+        <div className="container px-4 sm:px-6 max-w-full">
           <ProductsSectionTabs activeTab={'msi_gs'} />
-          <ProductsSectionTabs activeTab={'msi_gle'} />
-          <ProductsSectionTabs activeTab={'msi_gt'} />
-          <ProductsSectionTabs activeTab={'msi_ge'} />
         </div>
-        <div className="my-6">
+        <div className="container px-4 sm:px-6 max-w-full my-6 md:my-8 lg:my-12">
           <ProductsBrands />
         </div>
-        <div className="my-6">
+        <div className="container px-4 sm:px-6 max-w-full my-6 md:my-8 lg:my-12">
           <AnimatedTestimonials />
         </div>
-        <div className="my-6">
+        <div className="container px-4 sm:px-6 max-w-full my-6 md:my-8 lg:my-12">
           <OurCustomerCare />
         </div>
       </motion.section>
