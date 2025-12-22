@@ -109,6 +109,9 @@ const ProductsMain = (props: Props) => {
         </div>
         <div className="container px-4 sm:px-6 max-w-full">
           <ProductsSectionTabs activeTab={'msi_gs'} />
+          <ProductsSectionTabs activeTab={'msi_gle'} />
+          <ProductsSectionTabs activeTab={'msi_gt'} />
+          <ProductsSectionTabs activeTab={'msi_ge'} />
         </div>
         <div className="container px-4 sm:px-6 max-w-full my-6 md:my-8 lg:my-12">
           <ProductsBrands />
