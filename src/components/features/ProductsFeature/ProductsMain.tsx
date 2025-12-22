@@ -1,16 +1,15 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import NewProducts from '@/components/features/MainPageProducts/NewProducts';
-import Link from 'next/link';
+import FullWidthCarousel from '@/components/features/MainPageProducts/ProductCarousel';
 import ProductsBrands from '@/components/features/MainPageProducts/ProductsBrands';
 import { AnimatedTestimonials } from '@/components/features/MainPageProducts/Testimonial';
-import FullWidthCarousel from '@/components/features/MainPageProducts/ProductCarousel';
-import ProductCard from '../MainPageProducts/ProductCard';
 import zipLogo from '@/public/icons/zip-logo.png';
+import { motion } from 'framer-motion';
 
+import ProductsSectionTabs from '@/components/features/MainPageProducts/ProductsSectionTabs';
 import Image from 'next/image';
-import { NEW_PRODUCTS } from '@/core/mock/ProductsData';
+import OurCustomerCare from '../MainPageProducts/OurCustomerCare';
 type Props = {};
 
 const ProductsMain = (props: Props) => {
@@ -107,34 +106,19 @@ const ProductsMain = (props: Props) => {
           </h1>
         </div>
         <div className="w-full relative grid grid-cols-12 gap-4">
-          <div className="col-span-3 static">side items</div>
-          <div className="col-span-9">
-            <div className="grid grid-cols-12 gap-2">
-              {NEW_PRODUCTS.map((product) => (
-                <div className="lg:col-span-3 sm:col-span-2" key={product.id}>
-                  <ProductCard
-                    image={product.image}
-                    name={product.name}
-                    price={product.price}
-                    discountPrice={product.discountPrice}
-                    inStock={product.inStock}
-                    onDetails={() => {
-                      // Handle product details navigation
-                      console.log('Product details:', product.id);
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-            produc card
-            {/* <Link href={'products'}>Product ctalog</Link> */}
-          </div>
+          <ProductsSectionTabs activeTab={'msi_gs'} />
+          <ProductsSectionTabs activeTab={'msi_gle'} />
+          <ProductsSectionTabs activeTab={'msi_gt'} />
+          <ProductsSectionTabs activeTab={'msi_ge'} />
         </div>
         <div className="my-6">
           <ProductsBrands />
         </div>
         <div className="my-6">
           <AnimatedTestimonials />
+        </div>
+        <div className="my-6">
+          <OurCustomerCare />
         </div>
       </motion.section>
     </>
