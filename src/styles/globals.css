@@ -27,6 +27,8 @@
   --color-card-foreground: oklch(25% 0.15 260);
   --color-ecommerce-primary: oklch(0.535 0.2585 262.6);
   --color-ecommerce-secondary: oklch(0.6937 0.1731 244.63);
+
+  --breakpoint-xs: 20rem;
 }
 
 @layer base {

@@ -6,9 +6,9 @@ type Props = {};
 
 const OurCustomerCare = (props: Props) => {
   return (
-    <section className="relative container px-40">
+    <section className="relative container sm:px-40 lg:px-20 px-4 py-12 mx-auto">
       <div className="grid grid-cols-3 gap-4 place-items-center">
-        <Card className="">
+        <Card className="lg:col-span-1 sm:col-span-full shadow-0">
           <CardContent className="flex flex-col justify-center items-center">
             <HeadphonesIcon className="text-ecommerce-primary" />
             <h1 className="text-2xl sm:text-base my-4 font-black">
@@ -22,7 +22,7 @@ const OurCustomerCare = (props: Props) => {
             </p>
           </CardContent>
         </Card>
-        <Card className="">
+        <Card className="lg:col-span-1 sm:col-span-full">
           <CardContent className="flex flex-col justify-center items-center">
             <LocationEdit className="text-ecommerce-primary" />
             <h1 className="text-2xl sm:text-base my-4 font-black">
@@ -36,7 +36,7 @@ const OurCustomerCare = (props: Props) => {
             </p>
           </CardContent>
         </Card>
-        <Card className="">
+        <Card className="lg:col-span-1 sm:col-span-full">
           <CardContent className="flex flex-col justify-center items-center">
             <CardSimIcon className="text-ecommerce-primary" />
             <h1 className="text-2xl sm:text-base my-4 font-black">

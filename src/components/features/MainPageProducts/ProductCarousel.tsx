@@ -57,7 +57,7 @@ export default function FullWidthCarousel({
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background lg:visible sm:invisible xs:invisible"
         onClick={goToPrevious}
         aria-label="Previous slide"
       >
@@ -67,7 +67,7 @@ export default function FullWidthCarousel({
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background lg:visible sm:invisible xs:invisible"
         onClick={goToNext}
         aria-label="Next slide"
       >
