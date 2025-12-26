@@ -14,7 +14,6 @@ type Props = {};
 
 // Mock new products data
 
-
 const NewProducts = (props: Props) => {
   return (
     <div className="relative w-full py-8 px-4">

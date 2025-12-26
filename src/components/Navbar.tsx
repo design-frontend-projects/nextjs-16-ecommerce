@@ -1,15 +1,32 @@
 'use client';
-
 import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
 import { Menu, SearchIcon, Settings, ShoppingBasket, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 // import { useIsMobile } from '@/hooks/use-mobile';
-import ThemeToggle from './ThemeToggle';
-import Image from 'next/image';
-import logo from '@/public/icons/ecommerce-logo.png';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import logo from '@/public/icons/ecommerce-logo.png';
+import Image from 'next/image';
+import ThemeToggle from './ThemeToggle';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+
 export default function MainNavbar() {
   const [mainNavLinks, setMainNavLinks] = useState<
     { href: string; label: string }[]
@@ -99,14 +116,9 @@ export default function MainNavbar() {
               </button>
             </SignInButton>
           )}
-          <Badge
-            variant="secondary"
-            className="bg-ecommerce-primary text-white dark:bg-blue-600"
-          >
-            <ShoppingBasket />
-            <span className="mx-1">22</span>
-          </Badge>
-          <SearchIcon />
+          <ProductsBasket />
+          {/* <SearchIcon /> */}
+          <SearchBar />
           <ThemeToggle />
         </nav>
 
@@ -178,3 +190,72 @@ export default function MainNavbar() {
     </header>
   );
 }
+
+export const ProductsBasket = () => {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        {/* <Button variant="outline">Open</Button> */}
+        <Badge
+          variant="secondary"
+          className="bg-ecommerce-primary text-white dark:bg-blue-600"
+        >
+          <ShoppingBasket />
+          <span className="mx-1">22</span>
+        </Badge>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Edit profile</SheetTitle>
+          <SheetDescription>
+            Make changes to your profile here. Click save when you&apos;re done.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid flex-1 auto-rows-min gap-6 px-4">
+          <div className="grid gap-3">
+            <Label htmlFor="sheet-demo-name">Name</Label>
+            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
+          </div>
+          <div className="grid gap-3">
+            <Label htmlFor="sheet-demo-username">Username</Label>
+            <Input id="sheet-demo-username" defaultValue="@peduarte" />
+          </div>
+        </div>
+        <SheetFooter>
+          <Button type="submit">Checkout </Button>
+          <SheetClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+export const SearchBar = () => {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <SearchIcon />
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <p className="text-muted-foreground text-sm">
+              Search for prefered data
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <div className="grid grid-cols-3 items-center gap-4">
+              <Input
+                id="search word here"
+                defaultValue="100%"
+                className="col-span-2 h-8"
+              />
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};

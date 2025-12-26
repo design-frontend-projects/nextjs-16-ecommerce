@@ -6,7 +6,6 @@ import { getDateCompare } from './date';
 import { fetcher } from './fetcher';
 import { logError, logInfo } from './logger';
 import { prisma } from './prisma';
-import { displayNumbers } from './utils';
 
-export { displayNumbers, fetcher, getDateCompare, logError, logInfo, prisma };
+export { fetcher, getDateCompare, logError, logInfo, prisma };
 

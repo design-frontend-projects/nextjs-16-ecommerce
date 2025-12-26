@@ -1,4 +1,4 @@
-"use client";
+'use client';
 // components/FilterSidebar.tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -34,14 +34,14 @@ export default function FilterSidebar({
   onRangeChange,
   onResetFilters,
 }: FilterSidebarProps) {
-
   const router = useRouter();
 
   return (
     <Card className="shadow">
       <CardHeader>
         <Button variant={'ghost'} onClick={() => router.push('/')}>
-          <ChevronLeft className="mx-1 hover:scale-120 hover:fade-in-100 transition-all duration-200" /> Back
+          <ChevronLeft className="mx-1 hover:scale-120 hover:fade-in-100 transition-all duration-200" />{' '}
+          Back
         </Button>
         <CardTitle className="flex items-center justify-between">
           Filters

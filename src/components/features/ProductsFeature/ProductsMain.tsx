@@ -1,18 +1,17 @@
 'use client';
 
-import NewProducts from '@/components/features/MainPageProducts/NewProducts';
-import FullWidthCarousel from '@/components/features/MainPageProducts/ProductCarousel';
-import ProductsBrands from '@/components/features/MainPageProducts/ProductsBrands';
-import { AnimatedTestimonials } from '@/components/features/MainPageProducts/Testimonial';
+import NewProducts from '@/components/features/MainPageProductsComponents/NewProducts';
+import FullWidthCarousel from '@/components/features/MainPageProductsComponents/ProductCarousel';
+import ProductsBrands from '@/components/features/MainPageProductsComponents/ProductsBrands';
+import { AnimatedTestimonials } from '@/components/features/MainPageProductsComponents/Testimonial';
 import zipLogo from '@/public/icons/zip-logo.png';
 import { motion } from 'framer-motion';
 
-import ProductsSectionTabs from '@/components/features/MainPageProducts/ProductsSectionTabs';
+import ProductsSectionTabs from '@/components/features/MainPageProductsComponents/ProductsSectionTabs';
 import Image from 'next/image';
-import OurCustomerCare from '../MainPageProducts/OurCustomerCare';
-import { useEffect, useState } from 'react';
-import prismaInstance from '@/config/prismaConnection';
-import ProductsDataFetch from './products-data-fetch/ProductsDataFetch';
+import OurCustomerCare from '../MainPageProductsComponents/OurCustomerCare';
+import ProductModelCard from '../MainPageProductsComponents/ProductModelCard';
+// import ProductsDataFetch from './products-data-fetch/ProductsDataFetch';
 
 const ProductsMain = () => {
   const fadeIn = {
@@ -29,7 +28,7 @@ const ProductsMain = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <ProductsDataFetch />
+        {/* <ProductsDataFetch /> */}
         <div className="absolute inset-0 bg-linear-to-br from-(--primary)/1 to-(--accent)/1 pointer-events-none" />
         <div className="container px-4 sm:px-6 relative z-10 max-w-full">
           <motion.div
@@ -38,7 +37,7 @@ const ProductsMain = () => {
           >
             <FullWidthCarousel autoPlay autoPlayInterval={4000}>
               {/* Slide 1 */}
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Welcome to Our Platform
@@ -50,7 +49,7 @@ const ProductsMain = () => {
               </div>
 
               {/* Slide 2 */}
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Build Something Great
@@ -62,7 +61,7 @@ const ProductsMain = () => {
               </div>
 
               {/* Slide 3 */}
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full from-orange-500 to-red-600 flex bg-[url('/images/1.jpg')] items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full from-orange-500 to-red-600 flex bg-[url('/images/1.jpg')] items-center justify-center">
                 <div className="text-center text-white px-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Join Our Community
@@ -74,7 +73,7 @@ const ProductsMain = () => {
               </div>
 
               {/* Slide 4 */}
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full bg-linear-to-br from-pink-500 to-rose-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Start Your Journey
@@ -116,10 +115,18 @@ const ProductsMain = () => {
           </div>
         </div>
         <div className="container px-4 sm:px-6 max-w-full">
-          <ProductsSectionTabs activeTab={'msi_gs'} />
-          <ProductsSectionTabs activeTab={'msi_gle'} />
-          <ProductsSectionTabs activeTab={'msi_gt'} />
-          <ProductsSectionTabs activeTab={'msi_ge'} />
+          <ProductsSectionTabs activeTab={'msi_gs'}>
+            <ProductModelCard modelTitle="MSI Model" modelUrlSlug="msi" />
+          </ProductsSectionTabs>
+          <ProductsSectionTabs activeTab={'msi_gle'}>
+            <ProductModelCard modelTitle="Asus model" modelUrlSlug="asus" />
+          </ProductsSectionTabs>
+          <ProductsSectionTabs activeTab={'msi_gt'}>
+            <ProductModelCard modelTitle="Dell model" modelUrlSlug="dell" />
+          </ProductsSectionTabs>
+          <ProductsSectionTabs activeTab={'msi_ge'}>
+            <ProductModelCard modelTitle="HP model" modelUrlSlug="hp" />
+          </ProductsSectionTabs>
         </div>
         <div className="container px-4 sm:px-6 max-w-full my-6 md:my-8 lg:my-12">
           <ProductsBrands />

@@ -1,101 +1,107 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Testimonial {
-  id: number
-  content: string
-  author: string
-  role: string
-  company: string
-  image: string
+  id: number;
+  content: string;
+  author: string;
+  role: string;
+  company: string;
+  image: string;
 }
 
 const testimonials: Testimonial[] = [
   {
     id: 1,
     content:
-      "This platform has completely transformed how we approach our daily workflow. The intuitive design and powerful features have saved us countless hours.",
-    author: "Sarah Chen",
-    role: "Product Manager",
-    company: "TechCorp",
-    image: "/professional-woman-diverse.png",
+      'This platform has completely transformed how we approach our daily workflow. The intuitive design and powerful features have saved us countless hours.',
+    author: 'Sarah Chen',
+    role: 'Product Manager',
+    company: 'TechCorp',
+    image: '/professional-woman-diverse.png',
   },
   {
     id: 2,
     content:
       "The best investment we've made this year. Our team productivity has increased by 300% and collaboration has never been smoother.",
-    author: "Michael Rodriguez",
-    role: "CEO",
-    company: "StartupHub",
-    image: "/professional-man.jpg",
+    author: 'Michael Rodriguez',
+    role: 'CEO',
+    company: 'StartupHub',
+    image: '/professional-man.jpg',
   },
   {
     id: 3,
     content:
       "Outstanding support and reliability. We've been using this for 6 months now and it's become an essential part of our tech stack.",
-    author: "Emily Watson",
-    role: "Engineering Lead",
-    company: "DevStudio",
-    image: "/professional-woman-glasses.png",
+    author: 'Emily Watson',
+    role: 'Engineering Lead',
+    company: 'DevStudio',
+    image: '/professional-woman-glasses.png',
   },
   {
     id: 4,
     content:
-      "Game-changing platform that delivers on every promise. The ROI was evident within the first month of implementation.",
-    author: "James Kim",
-    role: "CTO",
-    company: "InnovateLab",
-    image: "/professional-asian-man.png",
+      'Game-changing platform that delivers on every promise. The ROI was evident within the first month of implementation.',
+    author: 'James Kim',
+    role: 'CTO',
+    company: 'InnovateLab',
+    image: '/professional-asian-man.png',
   },
-]
+];
 
 export function AnimatedTestimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
-  const [direction, setDirection] = useState<"left" | "right">("right")
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
 
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setDirection("right")
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
+      setDirection('right');
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [isAutoPlaying])
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const goToPrevious = () => {
-    setIsAutoPlaying(false)
-    setDirection("left")
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }
+    setIsAutoPlaying(false);
+    setDirection('left');
+    setCurrentIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
+  };
 
   const goToNext = () => {
-    setIsAutoPlaying(false)
-    setDirection("right")
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-  }
+    setIsAutoPlaying(false);
+    setDirection('right');
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
 
   const goToSlide = (index: number) => {
-    setIsAutoPlaying(false)
-    setDirection(index > currentIndex ? "right" : "left")
-    setCurrentIndex(index)
-  }
+    setIsAutoPlaying(false);
+    setDirection(index > currentIndex ? 'right' : 'left');
+    setCurrentIndex(index);
+  };
 
   return (
     <section className="w-full py-20 px-16 bg-secondary/30">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Loved by teams worldwide</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">
+            Loved by teams worldwide
+          </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            {"Don't just take our word for it. Here's what our customers have to say."}
+            {
+              "Don't just take our word for it. Here's what our customers have to say."
+            }
           </p>
         </div>
 
@@ -116,16 +122,21 @@ export function AnimatedTestimonials() {
                       </blockquote>
                       <div className="flex items-center gap-4">
                         <Avatar className="w-16 h-16 ring-2 ring-accent/20">
-                          <AvatarImage src={testimonial.image || "/placeholder.svg"} alt={testimonial.author} />
+                          <AvatarImage
+                            src={testimonial.image || '/placeholder.svg'}
+                            alt={testimonial.author}
+                          />
                           <AvatarFallback>
                             {testimonial.author
-                              .split(" ")
+                              .split(' ')
                               .map((n) => n[0])
-                              .join("")}
+                              .join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-semibold text-lg">{testimonial.author}</div>
+                          <div className="font-semibold text-lg">
+                            {testimonial.author}
+                          </div>
                           <div className="text-muted-foreground">
                             {testimonial.role} at {testimonial.company}
                           </div>
@@ -167,8 +178,10 @@ export function AnimatedTestimonials() {
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={cn(
-                  "w-2.5 h-2.5 rounded-full transition-all duration-300",
-                  index === currentIndex ? "bg-accent w-8" : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
+                  'w-2.5 h-2.5 rounded-full transition-all duration-300',
+                  index === currentIndex
+                    ? 'bg-accent w-8'
+                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                 )}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
@@ -191,5 +204,5 @@ export function AnimatedTestimonials() {
         </div> */}
       </div>
     </section>
-  )
+  );
 }

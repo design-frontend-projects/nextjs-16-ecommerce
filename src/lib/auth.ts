@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import type { CurrentUserProps } from '@/types';
 import { redirect } from 'next/navigation';
+import { supabase } from '@/config';
 
 export type UserRole = 'admin' | 'user' | 'moderator' | 'guest';
 
@@ -19,26 +20,20 @@ export async function getCurrentUser(): Promise<CurrentUserProps['currentUser']>
     }
 
     // Fetch user data from your database
-    const dbUser = await prisma.users.findUnique({
-      where: {
-        email: clerkUser.emailAddresses[0]?.emailAddress,
-      },
-    });
+    const dbUser = await supabase.auth.getUser();
 
     if (!dbUser) {
       return null;
     }
 
     return {
-      id: dbUser.id,
-      email: dbUser.email,
-      name: dbUser.name,
-      image: dbUser.image,
-      isAdmin: dbUser.isAdmin,
-      createdAt: dbUser.createdAt.toISOString(),
-      updatedAt: dbUser.updatedAt.toISOString(),
-      emailVerified: dbUser.emailVerified?.toISOString() || null,
-      password: null,
+      id: dbUser.data.user?.id as string,
+      email: dbUser.data.user?.email as string,
+      name: dbUser.data.user?.user_metadata.name as string,
+      isAdmin: dbUser.data.user?.role === 'admin',
+      createdAt: dbUser.data.user?.created_at as string,
+      updatedAt: dbUser.data.user?.updated_at as string,
+      emailVerified: dbUser.data.user?.email_confirmed_at as string,
     };
   } catch (error) {
     console.error('Error getting current user:', error);

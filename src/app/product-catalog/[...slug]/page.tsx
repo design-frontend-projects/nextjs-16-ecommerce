@@ -1,7 +1,7 @@
 'use client';
 import AppBreadCrumb from '@/components/CustomUI/AppBreadCrumb';
-import FullWidthCarousel from '@/components/features/MainPageProducts/ProductCarousel';
-import FilterSidebar from '@/components/features/MainPageProducts/FilterSidebar';
+import FullWidthCarousel from '@/components/features/MainPageProductsComponents/ProductCarousel';
+import FilterSidebar from '@/components/features/MainPageProductsComponents/FilterSidebar';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import {
@@ -13,11 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Item, ItemContent } from '@/components/ui/item';
 import { Grid2X2, List } from 'lucide-react';
-import ProductCard from '@/components/features/MainPageProducts/ProductCard';
+import ProductCard from '@/components/features/MainPageProductsComponents/ProductCard';
 import { NEW_PRODUCTS } from '@/core/mock/ProductsData';
-import OurCustomerCare from '@/components/features/MainPageProducts/OurCustomerCare';
+import OurCustomerCare from '@/components/features/MainPageProductsComponents/OurCustomerCare';
 import {
   Pagination,
   PaginationContent,
@@ -28,7 +27,6 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { useMediaQuery } from '@/hooks';
-import { signal } from '@preact/signals';
 import { useParams } from 'next/navigation';
 
 const ProductCatalog = () => {
@@ -279,18 +277,18 @@ const ProductCatalog = () => {
         </div>
         <div className="col-span-9">
           <div className="main-filter flex xs:flex-col lg:flex-row justify-between items-center mb-4">
-            <div className="total-paging lg:flex-3 md:flex-3 xs:flex-1">
+            <div className="lg:flex-3 md:flex-3 xs:flex-1">
               <h6 className="text-xs font-medium text-slate-400">
                 Items 15-50 of 60
               </h6>
             </div>
             <div className="filter-layout-wrapper w-full flex flex-row justify-end items-center flex-1">
-              <div className="options-wrapper flex lg:flex-row xs:flex-col items-center gap-2 mx-2">
+              <div className="options-wrapper flex lg:flex-row xs:flex-col xs:items-start lg:items-center gap-2 mx-2 sm:w-full">
                 <Select>
                   <SelectTrigger className="w-45">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-900">
+                  <SelectContent className="border-slate-900 w-full">
                     <SelectGroup>
                       <SelectLabel>Sort</SelectLabel>
                       <SelectItem value="apple">name</SelectItem>
@@ -303,7 +301,7 @@ const ProductCatalog = () => {
                   <SelectTrigger className="w-45">
                     <SelectValue placeholder="Show" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="w-full">
                     <SelectGroup>
                       <SelectLabel>Show</SelectLabel>
                       <SelectItem value="10">10</SelectItem>
@@ -337,7 +335,7 @@ const ProductCatalog = () => {
                 className={`w-full col-span-full ${
                   gridOrList === 'list'
                     ? 'col-span-full'
-                    : 'lg:col-span-3  md:col-span-6 sm:col-span-3'
+                    : 'lg:col-span-3 md:col-span-6 sm:col-span-3 xs:col-span-12'
                 }`}
                 key={product.id}
               >

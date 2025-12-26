@@ -1,6 +1,5 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
-
-export default clerkMiddleware();
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 export const config = {
   matcher: [
@@ -10,3 +9,19 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
 };
+
+const isProtectedRoute = createRouteMatcher(['/user(.*)', '/products(.*)']);
+const isPublicRoute = createRouteMatcher(['/']);
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+
+  if (userId && req.nextUrl.pathname === '/') {
+    const userUrl = new URL('/user', req.url);
+    return NextResponse.redirect(userUrl);
+  }
+
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
