@@ -10,9 +10,11 @@ import { motion } from 'framer-motion';
 import ProductsSectionTabs from '@/components/features/MainPageProducts/ProductsSectionTabs';
 import Image from 'next/image';
 import OurCustomerCare from '../MainPageProducts/OurCustomerCare';
-type Props = {};
+import { useEffect, useState } from 'react';
+import prismaInstance from '@/config/prismaConnection';
+import ProductsDataFetch from './products-data-fetch/ProductsDataFetch';
 
-const ProductsMain = (props: Props) => {
+const ProductsMain = () => {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -27,6 +29,7 @@ const ProductsMain = (props: Props) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
+        <ProductsDataFetch />
         <div className="absolute inset-0 bg-linear-to-br from-(--primary)/1 to-(--accent)/1 pointer-events-none" />
         <div className="container px-4 sm:px-6 relative z-10 max-w-full">
           <motion.div
@@ -35,7 +38,7 @@ const ProductsMain = (props: Props) => {
           >
             <FullWidthCarousel autoPlay autoPlayInterval={4000}>
               {/* Slide 1 */}
-              <div className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="relative h-64 sm:h-80 md:h-96 lg:h-112 w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <div className="text-center text-white px-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
                     Welcome to Our Platform
@@ -98,7 +101,12 @@ const ProductsMain = (props: Props) => {
         </div>
         <div className="container px-4 sm:px-6 max-w-full my-4 md:my-6 lg:my-10">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
-            <Image src={zipLogo} loading="lazy" alt="zip-logo" className="h-auto w-8 sm:w-10" />
+            <Image
+              src={zipLogo}
+              loading="lazy"
+              alt="zip-logo"
+              className="h-auto w-8 sm:w-10"
+            />
             <h1 className="text-center font-semibold text-sm sm:text-base md:text-lg text-indigo-600">
               Own it now, up to 6 months interest free
               <span className="block sm:inline mx-0 sm:mx-1 hover:underline text-xs sm:text-sm text-indigo-900 font-medium">

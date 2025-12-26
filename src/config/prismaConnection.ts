@@ -12,11 +12,11 @@ const adapter = new PrismaPg(pool);
 
 // 2. Singleton Function
 const prismaClientSingleton = () => {
-    return new PrismaClient({ adapter });
+  return new PrismaClient({ adapter });
 };
 
 // 3. Global Object Handling (prevents hot-reload crashes)
 const globalForPrisma = global;
-const prisma = globalForPrisma.prisma || prismaClientSingleton();
-export default prisma;
+const prismaInstance = globalForPrisma.prisma || prismaClientSingleton();
+export default prismaInstance;
 // if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
