@@ -1,4 +1,3 @@
-import { routing } from '@/i18n/routing';
 import { HomeClient } from './HomeClient';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';

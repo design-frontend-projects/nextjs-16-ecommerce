@@ -150,7 +150,7 @@ export function HeroSection({ products, className }: HeroSectionProps) {
                         <Button
                           size="lg"
                           variant="outline"
-                          className="rounded-full text-base px-8 border-white/30 text-white hover:bg-white/10"
+                          className="rounded-full text-base px-8 border-emerald-400 text-emerald-400 hover:bg-white/10"
                           asChild
                         >
                           <Link href="/products">{t('exploreCta')}</Link>
