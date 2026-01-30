@@ -12,10 +12,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HeroSection } from '@/components/layout/HeroSection';
-import { ProductGrid, CategoryCard } from '@/components/products';
 import { Link } from '@/i18n/navigation';
 import { useNewProducts, useCategories } from '@/hooks/useProducts';
 import { cn } from '@/lib/utils';
+import { CategoryCard } from '@/components/products/CategoryCard';
+import { ProductGrid } from '@/components/products/ProductGrid';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
