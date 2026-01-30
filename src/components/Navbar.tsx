@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import logo from '@/public/icons/ecommerce-logo.png';
 import Image from 'next/image';
-import ThemeToggle from './ThemeToggle';
+import { ThemeToggle } from './ThemeToggle';
 import {
   Popover,
   PopoverContent,
@@ -28,9 +28,7 @@ import {
 } from '@/components/ui/popover';
 
 export default function MainNavbar() {
-  const [mainNavLinks, setMainNavLinks] = useState<
-    { href: string; label: string }[]
-  >([
+  const [mainNavLinks] = useState<{ href: string; label: string }[]>([
     {
       href: '/laptops',
       label: 'Laptops',
@@ -52,12 +50,9 @@ export default function MainNavbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-(--background)/85 backdrop-blur-lg border-b border-(--border) shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-lg border-b border-border shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 max-w-full">
         <Link href="/" className="flex items-center space-x-2">
-          {/* <span className="text-xl sm:text-2xl font-bold font-poppins bg-linear-to-r from-(--primary) to-(--accent) bg-clip-text text-transparent">
-            NextBoiler
-          </span> */}
           <Image
             src={logo}
             alt="logo"
@@ -92,39 +87,38 @@ export default function MainNavbar() {
           {isSignedIn && (
             <Link
               href="/dashboard"
-              className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
             >
               Dashboard
             </Link>
           )}
           {isSignedIn ? (
             <>
-              <span className="text-sm font-medium text-(--foreground)">
+              <span className="text-sm font-medium text-foreground">
                 {user?.firstName + '' + user?.lastName ||
                   user?.emailAddresses[0].emailAddress}
               </span>
               <SignOutButton>
-                <button className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200">
+                <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
                   Sign Out
                 </button>
               </SignOutButton>
             </>
           ) : (
             <SignInButton mode="modal">
-              <button className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200">
+              <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
                 Sign In
               </button>
             </SignInButton>
           )}
           <ProductsBasket />
-          {/* <SearchIcon /> */}
           <SearchBar />
           <ThemeToggle />
         </nav>
 
         <button
           type="button"
-          className="md:hidden text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+          className="md:hidden text-foreground hover:text-primary transition-colors duration-200"
           onClick={handleToggle}
         >
           {mobileMenuOpen ? (
@@ -135,11 +129,11 @@ export default function MainNavbar() {
         </button>
 
         {mobileMenuOpen && (
-          <div className="fixed inset-x-0 top-16 z-50 bg-(--background) border-b border-(--border) shadow-lg md:hidden animate-in slide-in-from-top duration-300 max-w-full">
+          <div className="fixed inset-x-0 top-16 z-50 bg-background border-b border-border shadow-lg md:hidden animate-in slide-in-from-top duration-300 max-w-full">
             <div className="container py-6 flex flex-col space-y-4 px-4 sm:px-6 max-w-full">
               <Link
                 href="/settings"
-                className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
                 onClick={handleToggle}
               >
                 Settings
@@ -147,7 +141,7 @@ export default function MainNavbar() {
               {isSignedIn && (
                 <Link
                   href="/dashboard"
-                  className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
                   onClick={handleToggle}
                 >
                   Dashboard
@@ -158,25 +152,25 @@ export default function MainNavbar() {
                   href=""
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-(--foreground) hover:text-(--primary) transition-colors duration-200"
+                  className="text-foreground hover:text-primary transition-colors duration-200"
                   onClick={handleToggle}
                 >
                   <Settings className="h-5 w-5" />
                 </Link>
                 {isSignedIn ? (
                   <>
-                    <span className="text-sm font-medium text-(--foreground)">
+                    <span className="text-sm font-medium text-foreground">
                       {user?.firstName || user?.emailAddresses[0].emailAddress}
                     </span>
                     <SignOutButton>
-                      <button className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200">
+                      <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
                         Sign Out
                       </button>
                     </SignOutButton>
                   </>
                 ) : (
                   <SignInButton mode="modal">
-                    <button className="text-sm font-medium text-(--foreground) hover:text-(--primary) transition-colors duration-200">
+                    <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
                       Sign In
                     </button>
                   </SignInButton>
@@ -195,10 +189,9 @@ export const ProductsBasket = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        {/* <Button variant="outline">Open</Button> */}
         <Badge
           variant="secondary"
-          className="bg-ecommerce-primary text-white dark:bg-blue-600"
+          className="bg-ecommerce-primary text-white dark:bg-blue-600 cursor-pointer"
         >
           <ShoppingBasket />
           <span className="mx-1">22</span>
@@ -206,25 +199,22 @@ export const ProductsBasket = () => {
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
-          </SheetDescription>
+          <SheetTitle>Shopping Basket</SheetTitle>
+          <SheetDescription>You have 22 items in your basket.</SheetDescription>
         </SheetHeader>
-        <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="sheet-demo-username">Username</Label>
-            <Input id="sheet-demo-username" defaultValue="@peduarte" />
+        <div className="grid flex-1 auto-rows-min gap-6 px-4 py-8">
+          <div className="text-center text-muted-foreground">
+            Basket summary goes here.
           </div>
         </div>
         <SheetFooter>
-          <Button type="submit">Checkout </Button>
+          <Button type="submit" className="w-full">
+            Checkout
+          </Button>
           <SheetClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" className="w-full">
+              Cancel
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>
@@ -236,23 +226,23 @@ export const SearchBar = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <SearchIcon />
+        <Button variant="ghost" size="icon">
+          <SearchIcon className="h-5 w-5" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              Search for prefered data
+              Search for products...
             </p>
           </div>
           <div className="grid gap-2">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Input
-                id="search word here"
-                defaultValue="100%"
-                className="col-span-2 h-8"
-              />
-            </div>
+            <Input
+              id="search"
+              placeholder="Type to search..."
+              className="h-8"
+            />
           </div>
         </div>
       </PopoverContent>
