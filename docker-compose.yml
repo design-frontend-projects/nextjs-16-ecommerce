@@ -17,12 +17,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: my-nextjs-app
-    ports:
-      - '3000:3000'
+
     depends_on:
       - mongo
     environment:
       NODE_ENV: ${NODE_ENV}
       MONGODB_URI: ${MONGO_URI}
     #COMMAND: [ "pm2-runtime", "start", "npm", "--", "start" ]
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app

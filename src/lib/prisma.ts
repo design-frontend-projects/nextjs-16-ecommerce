@@ -9,14 +9,24 @@ if (!connectionString) {
 }
 
 // 1. Create the Pool and Adapter for Prisma 7
-const pool = new Pool({ connectionString });
+const pool = new Pool({
+  connectionString,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+  // Explicitly set SSL to ensure connection to Supabase works
+  ssl: { rejectUnauthorized: false },
+});
 const adapter = new PrismaPg(pool);
 
 // 2. Singleton Function
 const prismaClientSingleton = () => {
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   });
 };
 
