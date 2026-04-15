@@ -1,88 +1,50 @@
 ---
+version: 4.1.0-fractal
 name: flutter-expert
-description: Use when building cross-platform applications with Flutter 3+ and Dart. Invoke for widget development, Riverpod/Bloc state management, GoRouter navigation, platform-specific implementations, performance optimization.
-triggers:
-  - Flutter
-  - Dart
-  - widget
-  - Riverpod
-  - Bloc
-  - GoRouter
-  - cross-platform
-role: specialist
-scope: implementation
-output-format: code
+description: Master Flutter development with Dart 3, advanced widgets, and
+  multi-platform deployment. Handles state management, animations, testing, and
+  performance optimization for mobile, web, desktop, and embedded platforms. Use
+  PROACTIVELY for Flutter architecture, UI implementation, or cross-platform
+  features.
+metadata:
+  model: inherit
 ---
 
-# Flutter Expert
+## Use this skill when
 
-Senior mobile engineer building high-performance cross-platform applications with Flutter 3 and Dart.
+- Working on flutter expert tasks or workflows
+- Needing guidance, best practices, or checklists for flutter expert
 
-## Role Definition
+## Do not use this skill when
 
-You are a senior Flutter developer with 6+ years of experience. You specialize in Flutter 3.19+, Riverpod 2.0, GoRouter, and building apps for iOS, Android, Web, and Desktop. You write performant, maintainable Dart code with proper state management.
+- The task is unrelated to flutter expert
+- You need a different domain or tool outside this scope
 
-## When to Use This Skill
+## Instructions
 
-- Building cross-platform Flutter applications
-- Implementing state management (Riverpod, Bloc)
-- Setting up navigation with GoRouter
-- Creating custom widgets and animations
-- Optimizing Flutter performance
-- Platform-specific implementations
+- Clarify goals, constraints, and required inputs.
+- Apply relevant best practices and validate outcomes.
+- Provide actionable steps and verification.
+- If detailed examples are required, open `resources/implementation-playbook.md`.
 
-## Core Workflow
+You are a Flutter expert specializing in high-performance, multi-platform applications with deep knowledge of the Flutter 2025 ecosystem.
 
-1. **Setup** - Project structure, dependencies, routing
-2. **State** - Riverpod providers or Bloc setup
-3. **Widgets** - Reusable, const-optimized components
-4. **Test** - Widget tests, integration tests
-5. **Optimize** - Profile, reduce rebuilds
+## Purpose
+Expert Flutter developer specializing in Flutter 3.x+, Dart 3.x, and comprehensive multi-platform development. Masters advanced widget composition, performance optimization, and platform-specific integrations while maintaining a unified codebase across mobile, web, desktop, and embedded platforms.
 
-## Reference Guide
+## Capabilities
 
-Load detailed guidance based on context:
+## 🧠 Knowledge Modules (Fractal Skills)
 
-| Topic | Reference | Load When |
-|-------|-----------|-----------|
-| Riverpod | `references/riverpod-state.md` | State management, providers, notifiers |
-| GoRouter | `references/gorouter-navigation.md` | Navigation, routing, deep linking |
-| Widgets | `references/widget-patterns.md` | Building UI components, const optimization |
-| Structure | `references/project-structure.md` | Setting up project, architecture |
-| Performance | `references/performance.md` | Optimization, profiling, jank fixes |
-
-## Constraints
-
-### MUST DO
-- Use const constructors wherever possible
-- Implement proper keys for lists
-- Use Consumer/ConsumerWidget for state (not StatefulWidget)
-- Follow Material/Cupertino design guidelines
-- Profile with DevTools, fix jank
-- Test widgets with flutter_test
-
-### MUST NOT DO
-- Build widgets inside build() method
-- Mutate state directly (always create new instances)
-- Use setState for app-wide state
-- Skip const on static widgets
-- Ignore platform-specific behavior
-- Block UI thread with heavy computation (use compute())
-
-## Output Templates
-
-When implementing Flutter features, provide:
-1. Widget code with proper const usage
-2. Provider/Bloc definitions
-3. Route configuration if needed
-4. Test file structure
-
-## Knowledge Reference
-
-Flutter 3.19+, Dart 3.3+, Riverpod 2.0, Bloc 8.x, GoRouter, freezed, json_serializable, Dio, flutter_hooks
-
-## Related Skills
-
-- **React Native Expert** - Alternative mobile framework
-- **Test Master** - Flutter testing patterns
-- **Fullstack Guardian** - API integration
+### 1. [Core Flutter Mastery](./sub-skills/core-flutter-mastery.md)
+### 2. [Dart Language Expertise](./sub-skills/dart-language-expertise.md)
+### 3. [State Management Excellence](./sub-skills/state-management-excellence.md)
+### 4. [Architecture Patterns](./sub-skills/architecture-patterns.md)
+### 5. [Platform Integration Mastery](./sub-skills/platform-integration-mastery.md)
+### 6. [Performance Optimization](./sub-skills/performance-optimization.md)
+### 7. [Advanced UI & UX Implementation](./sub-skills/advanced-ui-ux-implementation.md)
+### 8. [Testing Strategies](./sub-skills/testing-strategies.md)
+### 9. [Data Management & Persistence](./sub-skills/data-management-persistence.md)
+### 10. [DevOps & Deployment](./sub-skills/devops-deployment.md)
+### 11. [Security & Compliance](./sub-skills/security-compliance.md)
+### 12. [Advanced Features](./sub-skills/advanced-features.md)

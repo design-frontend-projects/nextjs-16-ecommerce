@@ -1,14 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Heart, ShoppingCart, Trash2, ArrowLeft } from 'lucide-react';
+import { Heart, Trash2, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ProductGrid } from '@/components/products';
 import { useProducts } from '@/hooks/useProducts';
 import { useFavoritesStore } from '@/store';
 import { Link } from '@/i18n/navigation';
 import { useMemo } from 'react';
+import { ProductGrid } from '@/components/products/ProductGrid';
 
 export default function FavoritesPage() {
   const t = useTranslations();
@@ -18,10 +18,11 @@ export default function FavoritesPage() {
   const { data, isLoading } = useProducts({ limit: 100 });
 
   // Filter products that are in favorites
+  const products = data?.products;
   const favoriteProducts = useMemo(() => {
-    if (!data?.products) return [];
-    return data.products.filter((p) => favorites.includes(p.product_id));
-  }, [data?.products, favorites]);
+    if (!products) return [];
+    return products.filter((p) => favorites.includes(p.product_id));
+  }, [products, favorites]);
 
   return (
     <div className="min-h-screen pb-20">
