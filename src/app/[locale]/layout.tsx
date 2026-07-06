@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 import '@/styles/globals.css';
+import '@/styles/fonts.css';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -61,7 +62,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="min-h-screen bg-background font-sans antialiased" style={{ fontFamily: 'var(--font-sans)' }}>
         <ClerkProvider>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <QueryProvider>

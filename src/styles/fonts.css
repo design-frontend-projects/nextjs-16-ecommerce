@@ -1,72 +1,9 @@
-/* Inter Font Family */
+/* Geist Font Family - Vercel's official font */
 
-@font-face {
-  font-family: 'Inter';
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-thin.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Inter';
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-extra-light.ttf') format('truetype');
-}
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-@font-face {
-  font-family: 'Inter';
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-light.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-medium.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-semi-bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-extra-bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/inter/inter-black.ttf') format('truetype');
+@layer base {
+  :root {
+    --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
 }

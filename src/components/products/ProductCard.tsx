@@ -30,7 +30,6 @@ export function ProductCard({
     state.isFavorite(product.product_id)
   );
 
-  // Check if product is new (created within last 7 days)
   const isNew = () => {
     const createdAt = new Date(product.created_at);
     const now = new Date();
@@ -53,7 +52,6 @@ export function ProductCard({
     toggleFavorite(product.product_id);
   };
 
-  // Generate placeholder image based on product name
   const imageUrl = `https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop&q=80`;
 
   return (
@@ -61,36 +59,31 @@ export function ProductCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -2 }}
       className={className}
     >
-      <Card className="group relative overflow-hidden border-0 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer bg-card">
+      <Card className="group relative overflow-hidden border bg-card hover:shadow-lg transition-all duration-200 cursor-pointer">
         <Link href={`/products/${product.product_id}`}>
-          {/* Image Container */}
           <div className="relative aspect-square overflow-hidden bg-muted/30">
             <Image
               src={imageUrl}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              className="object-cover transition-opacity duration-300 group-hover:opacity-90"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
 
-            {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
               {isNew() && <BadgeNew />}
             </div>
 
-            {/* Quick Actions Overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-
             <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <Button
                 size="icon"
-                variant="secondary"
+                variant="ghost"
                 className={cn(
-                  'h-9 w-9 rounded-full shadow-lg backdrop-blur-sm',
-                  isFavorite && 'bg-rose-500 text-white hover:bg-rose-600'
+                  'h-9 w-9 rounded-full',
+                  isFavorite && 'bg-accent text-accent-foreground'
                 )}
                 onClick={handleToggleFavorite}
                 aria-label={
@@ -104,48 +97,32 @@ export function ProductCard({
               {showQuickView && (
                 <Button
                   size="icon"
-                  variant="secondary"
-                  className="h-9 w-9 rounded-full shadow-lg backdrop-blur-sm"
+                  variant="ghost"
+                  className="h-9 w-9 rounded-full"
                   aria-label="Quick view"
                 >
                   <Eye className="h-4 w-4" />
                 </Button>
               )}
             </div>
-
-            {/* Add to Cart Button */}
-            <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Button
-                className="w-full rounded-full shadow-lg backdrop-blur-sm"
-                onClick={handleAddToCart}
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Cart
-              </Button>
-            </div>
           </div>
 
-          {/* Content */}
           <CardContent className="p-4 space-y-2">
-            {/* Category */}
             {product.category && (
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">
                 {product.category.name}
               </span>
             )}
 
-            {/* Title */}
-            <h3 className="font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+            <h3 className="font-medium text-foreground line-clamp-2">
               {product.name}
             </h3>
 
-            {/* Price */}
             <PriceTag price={product.base_price} size="md" />
 
-            {/* Stock Status */}
             {product.inventory && product.inventory.quantity > 0 ? (
               product.inventory.quantity <= 5 && (
-                <span className="text-xs text-amber-600">
+                <span className="text-xs text-muted-foreground">
                   Only {product.inventory.quantity} left
                 </span>
               )

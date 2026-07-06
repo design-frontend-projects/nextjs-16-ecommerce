@@ -11,7 +11,6 @@ interface CategoryCardProps {
   className?: string;
 }
 
-// Map category names to Unsplash images
 const categoryImages: Record<string, string> = {
   food: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&h=300&fit=crop&q=80',
   fruites:
@@ -37,35 +36,29 @@ export function CategoryCard({ category, className }: CategoryCardProps) {
       className={className}
     >
       <Link href={`/products?category=${category.category_id}`}>
-        <div className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300">
-          {/* Background Image */}
+        <div className="group relative overflow-hidden rounded-xl cursor-pointer border bg-card hover:shadow-lg transition-all duration-200">
           <div className="relative aspect-[4/3]">
             <Image
               src={imageUrl}
               alt={category.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              className="object-cover"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-background/60" />
           </div>
 
-          {/* Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-5">
-            <h3 className="text-xl font-bold text-white capitalize mb-1">
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-xl font-bold text-foreground capitalize mb-1">
               {category.name}
             </h3>
             {category.products_count !== undefined && (
-              <p className="text-white/80 text-sm">
+              <p className="text-muted-foreground text-sm">
                 {category.products_count}{' '}
                 {category.products_count === 1 ? 'product' : 'products'}
               </p>
             )}
           </div>
-
-          {/* Hover Effect */}
-          <div className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-2xl transition-colors duration-300" />
         </div>
       </Link>
     </motion.div>

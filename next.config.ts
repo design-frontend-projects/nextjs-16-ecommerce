@@ -3,6 +3,20 @@ import type { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
+function buildContentSecurityPolicy() {
+  const directives = [
+    "default-src 'self'",
+    "img-src 'self' https: data: blob:",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.clerk.accounts.dev https://*.clerk.com",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' https: data:",
+    "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com",
+    "frame-src 'self' https://*.clerk.accounts.dev https://*.clerk.com",
+  ];
+
+  return directives.join('; ');
+}
+
 const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
@@ -56,8 +70,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value:
-              "default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;",
+            value: buildContentSecurityPolicy(),
           },
         ],
       },

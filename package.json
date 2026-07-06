@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbopack --port 3005",
+    "dev": "next dev --turbopack --port 5901",
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --write .",
