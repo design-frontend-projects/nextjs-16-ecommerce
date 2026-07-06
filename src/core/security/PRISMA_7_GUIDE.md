@@ -191,7 +191,7 @@ export async function GET(request: Request) {
 Create a migration after schema changes:
 
 ```bash
-npx prisma migrate dev --name add_user_model
+pnpx prisma migrate dev --name add_user_model
 ```
 
 ### Generate Prisma Client
@@ -199,7 +199,7 @@ npx prisma migrate dev --name add_user_model
 Generate the Prisma client after schema changes:
 
 ```bash
-npx prisma generate
+pnpx prisma generate
 ```
 
 ### Prisma Studio
@@ -207,7 +207,7 @@ npx prisma generate
 View and edit data in a UI:
 
 ```bash
-npx prisma studio
+pnpx prisma studio
 ```
 
 ### Format Schema
@@ -291,7 +291,7 @@ main()
 ### Run Seed
 
 ```bash
-npx prisma db seed
+pnpx prisma db seed
 ```
 
 ## Common Issues & Fixes
@@ -300,7 +300,7 @@ npx prisma db seed
 
 **Solution:**
 ```bash
-npx prisma generate
+pnpx prisma generate
 ```
 
 ### Issue: "Connection timeout"
@@ -340,13 +340,13 @@ Edit `prisma/schema.prisma`
 ### 2. Create Migration
 
 ```bash
-npx prisma migrate dev --name describe_changes
+pnpx prisma migrate dev --name describe_changes
 ```
 
 ### 3. Generate Client
 
 ```bash
-npx prisma generate
+pnpx prisma generate
 ```
 
 ### 4. Test
