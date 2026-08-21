@@ -1,8 +1,8 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
-import { ClerkProvider } from '@clerk/nextjs';
 import { QueryProvider } from '@/providers/query';
 import { ThemeProvider } from '@/providers/theme';
+import { AuthProvider } from '@/context/AuthContext';
 import { MegaNavbar } from '@/components/layout/MegaNavbar';
 import MainFooter from '@/components/Footer';
 import { routing } from '@/i18n/routing';
@@ -63,9 +63,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased" style={{ fontFamily: 'var(--font-sans)' }}>
-        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2xlcmsuZXhhbXBsZS5jb20k'}>
-          <NextIntlClientProvider messages={messages} locale={locale}>
-            <QueryProvider>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <QueryProvider>
+            <AuthProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
@@ -78,9 +78,9 @@ export default async function LocaleLayout({
                   <MainFooter />
                 </div>
               </ThemeProvider>
-            </QueryProvider>
-          </NextIntlClientProvider>
-        </ClerkProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

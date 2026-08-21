@@ -34,8 +34,8 @@ This boilerplate is designed to give you a production-ready foundation with ever
 
 - [`Next.js 16`](https://nextjs.org/) - React framework for production with Turbopack
 - [`React 19`](https://react.dev/) - Latest React with improved performance
-- [`Prisma`](https://www.prisma.io/) - Next-generation ORM for database management
-- [`Clerk`](https://clerk.com/) - Complete user management and authentication
+- [`Prisma 7`](https://www.prisma.io/) - Next-generation ORM for PostgreSQL database management
+- [`Supabase Auth`](https://supabase.com/auth) - Complete authentication and user management
 - [`Framer Motion`](https://www.framer.com/motion/) - Production-ready animation library
 - [`TypeScript`](https://typescriptlang.org) - Type safety and improved developer experience
 - [`Tailwind CSS`](https://tailwindcss.com/) - Utility-first CSS framework
@@ -138,27 +138,27 @@ import { Button } from '@/components/ui/Button';
 
 ### Authentication
 
-User authentication is handled by [Clerk](https://clerk.com/), providing:
+User authentication is handled by [Supabase Auth](https://supabase.com/auth), providing:
 
 - Email/password authentication
 - Social login (Google, GitHub, etc.)
-- User management dashboard
-- Session management
-- Protected routes
+- JWT session management via cookies (`@supabase/ssr`)
+- Role-based access control and protected routes in Next.js middleware
+- Direct integration with PostgreSQL Row Level Security (RLS) and `auth.uid()`
 
 ### Database
 
-The project uses [Prisma](https://www.prisma.io/) as the ORM with MongoDB:
+The project uses [Prisma 7](https://www.prisma.io/) as the ORM with Supabase PostgreSQL:
 
 ```bash
 # Generate Prisma client
-npm run prisma:generate
+pnpm prisma:generate
 
 # Push schema changes
-npm run prisma:push
+pnpm prisma:push
 
 # Seed database
-npm run seed
+pnpm seed
 ```
 
 ### Code Quality
@@ -209,22 +209,13 @@ chore: update dependencies
 Create a `.env` file in the root directory:
 
 ```env
-# Database
-MONGODB_URI=your_mongodb_connection_string
+# Database (Supabase PostgreSQL)
+DATABASE_URL="postgresql://..."
+SHADOW_DATABASE_URL="postgresql://..."
 
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
-
-# Clerk URLs
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
-
-# NextAuth
-NEXTAUTH_SECRET=your_nextauth_secret
+# Supabase Auth & Storage
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 # Environment
 NODE_ENV=development

@@ -19,6 +19,8 @@ export type IToken = {
   refreshToken?: string;
 };
 
+export type UserRole = 'admin' | 'user' | 'moderator' | 'guest';
+
 export interface CurrentUserProps {
   currentUser?: {
     createdAt: string;

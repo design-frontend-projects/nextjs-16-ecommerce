@@ -29,7 +29,7 @@ Next.js 16 App Router e-commerce marketplace. React 19 with React Compiler enabl
 
 - All pages live under [src/app/[locale]/](src/app/%5Blocale%5D/) — locales are `en` and `ar` (RTL), default `en`, locale prefix always in URL. Config in [src/i18n/routing.ts](src/i18n/routing.ts); translations in [src/messages/](src/messages/).
 - Use the locale-aware navigation helpers from [src/i18n/navigation.ts](src/i18n/navigation.ts) (not `next/link`/`next/navigation` directly) for internal links and redirects.
-- [src/proxy.tsx](src/proxy.tsx) is the middleware (Next.js 16 "proxy" convention): it chains Clerk's `clerkMiddleware` with the next-intl middleware. Protected routes: `/:locale/profile`, `/:locale/orders`, `/:locale/checkout`.
+- [src/proxy.tsx](src/proxy.tsx) is the middleware (Next.js 16 "proxy" convention): it chains Supabase SSR session refreshing with next-intl middleware. Protected routes: `/:locale/profile`, `/:locale/orders`, `/:locale/checkout`.
 
 ### Database (Prisma 7 + Supabase PostgreSQL)
 
@@ -41,7 +41,7 @@ Next.js 16 App Router e-commerce marketplace. React 19 with React Compiler enabl
 
 ### Auth
 
-Clerk (`@clerk/nextjs`). Role-check helpers and setup guides live in [src/core/security/](src/core/security/) — see `PRISMA_7_GUIDE.md`, `CLERK_SETUP_GUIDE.md`, `RoleCheck.tsx` (client) and `RoleCheckServer.ts` (server). Supabase JS clients also exist in [src/config/](src/config/) (`supabaseClientInit.ts`, `supabaseServerClient.ts`) for storage/RLS-backed access.
+Supabase Auth (`@supabase/ssr` & `@supabase/supabase-js`). Client auth state is managed via `AuthContext` (`src/context/AuthContext.tsx`) and `useAuth()`. Server-side helpers reside in [src/lib/auth.ts](src/lib/auth.ts) and [src/core/security/RoleCheckServer.ts](src/core/security/RoleCheckServer.ts). Supabase clients live in [src/config/](src/config/) (`supabaseClientInit.ts` for browser, `supabaseServerClient.ts` for server).
 
 ### State & data fetching
 
@@ -60,4 +60,4 @@ Clerk (`@clerk/nextjs`). Role-check helpers and setup guides live in [src/core/s
 
 - README.md is partially stale: it says MongoDB and port 3000, but the actual database is Supabase PostgreSQL and dev runs on port 5901. docker-compose.yml also still references MongoDB.
 - `removeConsole` is enabled in production builds; use the winston logger in [src/lib/logger.ts](src/lib/logger.ts) for server-side logging.
-- CSP and security headers are set in [next.config.ts](next.config.ts) (Clerk domains are allow-listed); an nginx reverse-proxy config with rate limiting lives in [nginx/nginx.conf](nginx/nginx.conf).
+- CSP and security headers are set in [next.config.ts](next.config.ts) (Supabase domains are allow-listed); an nginx reverse-proxy config with rate limiting lives in [nginx/nginx.conf](nginx/nginx.conf).

@@ -1,28 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
-// Get Supabase credentials from environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Get Supabase credentials from environment variables (supporting Next.js and Vite conventions)
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  '';
+
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  '';
 
 // Validate that required environment variables are set
-if (!supabaseUrl) {
+if (!supabaseUrl && typeof window !== 'undefined') {
   console.warn('NEXT_PUBLIC_SUPABASE_URL is not set');
 }
 
-if (!supabaseAnonKey) {
+if (!supabaseAnonKey && typeof window !== 'undefined') {
   console.warn('NEXT_PUBLIC_SUPABASE_ANON_KEY is not set');
 }
 
 /**
  * Supabase client instance for client-side operations
- * This client is used in browser and Next.js client components
+ * Uses @supabase/ssr createBrowserClient for automatic cookie-sync with Next.js server
  */
-export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+export const supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
 export default supabaseClient;

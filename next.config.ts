@@ -7,11 +7,11 @@ function buildContentSecurityPolicy() {
   const directives = [
     "default-src 'self'",
     "img-src 'self' https: data: blob:",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.clerk.accounts.dev https://*.clerk.com",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' https: data:",
-    "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com",
-    "frame-src 'self' https://*.clerk.accounts.dev https://*.clerk.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "frame-src 'self'",
   ];
 
   return directives.join('; ');
@@ -21,7 +21,6 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
   },
-  // cacheComponents: true, // TODO: Enable after resolving Clerk compatibility
   reactCompiler: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

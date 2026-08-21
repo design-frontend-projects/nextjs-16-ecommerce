@@ -1,9 +1,8 @@
 'use client';
-import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
-import { Menu, SearchIcon, Settings, ShoppingBasket, X } from 'lucide-react';
+import { Menu, SearchIcon, Settings, ShoppingBasket, X, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-// import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,7 +42,12 @@ export default function MainNavbar() {
     },
   ]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn, user, signOut } = useAuth();
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    (user?.email ? user.email.split('@')[0] : 'User');
 
   const handleToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -95,21 +99,22 @@ export default function MainNavbar() {
           {isSignedIn ? (
             <>
               <span className="text-sm font-medium text-foreground">
-                {user?.firstName + '' + user?.lastName ||
-                  user?.emailAddresses[0].emailAddress}
+                {displayName}
               </span>
-              <SignOutButton>
-                <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
-                  Sign Out
-                </button>
-              </SignOutButton>
+              <button
+                onClick={() => signOut()}
+                className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors duration-200"
+              >
+                Sign Out
+              </button>
             </>
           ) : (
-            <SignInButton mode="modal">
-              <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
-                Sign In
-              </button>
-            </SignInButton>
+            <Link
+              href="/sign-in"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
+            >
+              Sign In
+            </Link>
           )}
           <ProductsBasket />
           <SearchBar />
@@ -160,20 +165,26 @@ export default function MainNavbar() {
                 {isSignedIn ? (
                   <>
                     <span className="text-sm font-medium text-foreground">
-                      {user?.firstName || user?.emailAddresses[0].emailAddress}
+                      {displayName}
                     </span>
-                    <SignOutButton>
-                      <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
-                        Sign Out
-                      </button>
-                    </SignOutButton>
+                    <button
+                      onClick={() => {
+                        signOut();
+                        handleToggle();
+                      }}
+                      className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors duration-200"
+                    >
+                      Sign Out
+                    </button>
                   </>
                 ) : (
-                  <SignInButton mode="modal">
-                    <button className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200">
-                      Sign In
-                    </button>
-                  </SignInButton>
+                  <Link
+                    href="/sign-in"
+                    className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-200"
+                    onClick={handleToggle}
+                  >
+                    Sign In
+                  </Link>
                 )}
                 <ThemeToggle />
               </div>

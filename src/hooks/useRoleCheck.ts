@@ -2,74 +2,85 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@/context/AuthContext';
 import type { CurrentUserProps } from '@/types';
 import { getUserRole, hasRole, hasAnyRole, type UserRole } from '@/core/security/RoleCheck';
 
 /**
  * Hook to check user role in client components
- * @param currentUser - Current user object
+ * @param currentUser - Current user object (optional, falls back to context)
  * @returns Object with role checking utilities
  */
-export function useRoleCheck(currentUser: CurrentUserProps['currentUser']) {
+export function useRoleCheck(currentUser?: CurrentUserProps['currentUser']) {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const { isLoaded } = useAuth();
+  const { user, isLoading: isAuthLoading, role: contextRole } = useAuth();
+
+  const activeUser = currentUser ?? (user ? {
+    id: user.id,
+    email: user.email || null,
+    name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+    image: user.user_metadata?.avatar_url || null,
+    isAdmin: contextRole === 'admin',
+    createdAt: user.created_at,
+    updatedAt: user.updated_at || user.created_at,
+    emailVerified: user.email_confirmed_at || null,
+  } : null);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (isAuthLoading) {
       return;
     }
 
-    if (currentUser) {
-      setUserRole(getUserRole(currentUser));
+    if (activeUser) {
+      setUserRole(getUserRole(activeUser));
+    } else {
+      setUserRole('guest');
     }
-    setIsLoading(false);
-  }, [currentUser, isLoaded]);
+  }, [activeUser, isAuthLoading]);
 
   const checkRole = useCallback(
     (role: UserRole) => {
-      return hasRole(currentUser, role);
+      return hasRole(activeUser, role);
     },
-    [currentUser]
+    [activeUser]
   );
 
   const checkAnyRole = useCallback(
     (roles: UserRole[]) => {
-      return hasAnyRole(currentUser, roles);
+      return hasAnyRole(activeUser, roles);
     },
-    [currentUser]
+    [activeUser]
   );
 
   const requireRole = useCallback(
     (role: UserRole, redirectTo: string = '/dashboard') => {
-      if (!hasRole(currentUser, role)) {
+      if (!hasRole(activeUser, role)) {
         router.push(redirectTo);
         return false;
       }
       return true;
     },
-    [currentUser, router]
+    [activeUser, router]
   );
 
   const requireAnyRole = useCallback(
     (roles: UserRole[], redirectTo: string = '/dashboard') => {
-      if (!hasAnyRole(currentUser, roles)) {
+      if (!hasAnyRole(activeUser, roles)) {
         router.push(redirectTo);
         return false;
       }
       return true;
     },
-    [currentUser, router]
+    [activeUser, router]
   );
 
   return {
-    userRole,
-    isLoading,
-    isAdmin: userRole === 'admin',
-    isUser: userRole === 'user',
-    isGuest: userRole === 'guest',
+    userRole: userRole ?? contextRole,
+    isLoading: isAuthLoading,
+    isAdmin: (userRole ?? contextRole) === 'admin',
+    isUser: (userRole ?? contextRole) === 'user',
+    isGuest: (userRole ?? contextRole) === 'guest',
     checkRole,
     checkAnyRole,
     requireRole,

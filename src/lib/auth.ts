@@ -1,39 +1,41 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import type { CurrentUserProps } from '@/types';
+import { createServerClient } from '@/config/supabaseServerClient';
+import type { CurrentUserProps, UserRole } from '@/types';
 import { redirect } from 'next/navigation';
-import { supabase } from '@/config';
 
-export type UserRole = 'admin' | 'user' | 'moderator' | 'guest';
+export type { UserRole };
 
 /**
- * Get the current authenticated user from Clerk and database
- * This function should be called in Server Components or API routes only
+ * Get the current authenticated user from Supabase server session
+ * This function should be called in Server Components, Server Actions, or API routes only
  * @returns Current user object or null if not authenticated
  */
 export async function getCurrentUser(): Promise<CurrentUserProps['currentUser']> {
   try {
-    const clerkUser = await currentUser();
+    const supabase = await createServerClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    if (!clerkUser) {
+    if (error || !user) {
       return null;
     }
 
-    // Fetch user data from your database
-    const dbUser = await supabase.auth.getUser();
-
-    if (!dbUser) {
-      return null;
-    }
+    const metadataRole = user.user_metadata?.role || user.app_metadata?.role;
+    const isAdminUser = metadataRole === 'admin' || user.role === 'admin';
 
     return {
-      id: dbUser.data.user?.id as string,
-      email: dbUser.data.user?.email as string,
-      name: dbUser.data.user?.user_metadata.name as string,
-      isAdmin: dbUser.data.user?.role === 'admin',
-      createdAt: dbUser.data.user?.created_at as string,
-      updatedAt: dbUser.data.user?.updated_at as string,
-      emailVerified: dbUser.data.user?.email_confirmed_at as string,
+      id: user.id,
+      email: user.email || null,
+      name:
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        (user.email ? user.email.split('@')[0] : null),
+      image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+      isAdmin: isAdminUser,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at || user.created_at,
+      emailVerified: user.email_confirmed_at || null,
     };
   } catch (error) {
     console.error('Error getting current user:', error);
@@ -42,11 +44,20 @@ export async function getCurrentUser(): Promise<CurrentUserProps['currentUser']>
 }
 
 /**
- * Get the current Clerk session
- * @returns Clerk session or null
+ * Get the current Supabase session
+ * @returns Supabase session or null
  */
 export async function getSession() {
-  return await auth();
+  try {
+    const supabase = await createServerClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session;
+  } catch (error) {
+    console.error('Error getting session:', error);
+    return null;
+  }
 }
 
 /**
@@ -68,13 +79,24 @@ export async function isUserAdmin(): Promise<boolean> {
 }
 
 /**
- * Get Clerk user ID from session
- * @returns Clerk user ID or null
+ * Get Supabase user ID from session
+ * @returns Supabase user ID or null
  */
-export async function getClerkUserId(): Promise<string | null> {
-  const { userId } = await auth();
-  return userId || null;
+export async function getAuthUserId(): Promise<string | null> {
+  try {
+    const supabase = await createServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id || null;
+  } catch (error) {
+    console.error('Error getting auth user id:', error);
+    return null;
+  }
 }
+
+// Backward-compatible alias
+export const getSupabaseUserId = getAuthUserId;
 
 // ==================== ROLE CHECK FUNCTIONS ====================
 
@@ -167,12 +189,12 @@ export function requireAdmin(
  * Check if user is authenticated
  * Redirects if not authenticated
  * @param user - Current user object
- * @param redirectTo - Path to redirect if not authenticated (default: '/auth/signin')
+ * @param redirectTo - Path to redirect if not authenticated (default: '/sign-in')
  * @returns User if authenticated, otherwise redirects
  */
 export function requireAuth(
   user: CurrentUserProps['currentUser'] | null,
-  redirectTo: string = '/auth/signin'
+  redirectTo: string = '/sign-in'
 ): CurrentUserProps['currentUser'] {
   if (!user) {
     redirect(redirectTo);

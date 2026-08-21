@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Menu, ShoppingCart, Heart, Globe, X } from 'lucide-react';
-import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { Menu, ShoppingCart, Heart, Globe, X, User as UserIcon, LogOut, Package, Shield } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SearchBar } from '@/components/search/SearchBar';
@@ -79,6 +83,7 @@ function NavbarInteractive() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isSignedIn, isAdmin, signOut, isLoading } = useAuth();
 
   const { data: categoriesData } = useCategories();
   const cartItemCount = useCartStore((state) => state.getItemCount());
@@ -92,8 +97,15 @@ function NavbarInteractive() {
   };
 
   const categories = categoriesData?.categories || [];
-
   const isActive = (href: string) => pathname === href;
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    (user?.email ? user.email.split('@')[0] : 'Account');
+
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const initials = (displayName[0] || 'U').toUpperCase();
 
   return (
     <>
@@ -167,23 +179,74 @@ function NavbarInteractive() {
                 )}
               </Button>
 
-              <SignedIn>
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: 'h-8 w-8',
-                    },
-                  }}
-                />
-              </SignedIn>
-              <SignedOut>
-                <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
-                  <Link href="/sign-in">{t('signIn')}</Link>
-                </Button>
-                <Button size="sm" asChild className="hidden sm:flex">
-                  <Link href="/sign-up">{t('signUp')}</Link>
-                </Button>
-              </SignedOut>
+              {!isLoading && (
+                <>
+                  {isSignedIn ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={avatarUrl} alt={displayName} />
+                            <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{displayName}</p>
+                            <p className="text-xs leading-none text-muted-foreground truncate">
+                              {user?.email}
+                            </p>
+                          </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem asChild>
+                            <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                              <UserIcon className="h-4 w-4" />
+                              <span>{t('profile')}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/orders" className="flex items-center gap-2 cursor-pointer">
+                              <Package className="h-4 w-4" />
+                              <span>{t('orders')}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          {isAdmin && (
+                            <DropdownMenuItem asChild>
+                              <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                                <Shield className="h-4 w-4 text-amber-500" />
+                                <span>Dashboard</span>
+                              </Link>
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive cursor-pointer flex items-center gap-2"
+                          onClick={() => signOut()}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span>{t('signOut')}</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <div className="hidden sm:flex items-center gap-2">
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/sign-in">{t('signIn')}</Link>
+                      </Button>
+                      <Button size="sm" asChild>
+                        <Link href="/sign-up">{t('signUp')}</Link>
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
 
               <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(true)}>
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -228,18 +291,45 @@ function NavbarInteractive() {
             ))}
           </nav>
           <div className="p-4 border-t">
-            <div className="flex flex-col gap-2">
-              <Button asChild>
-                <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
-                  {t('signIn')}
-                </Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
-                  {t('signUp')}
-                </Link>
-              </Button>
-            </div>
+            {isSignedIn ? (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 px-2 py-1">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={avatarUrl} alt={displayName} />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col truncate">
+                    <span className="text-sm font-semibold">{displayName}</span>
+                    <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+                  </div>
+                </div>
+                <Button variant="outline" asChild onClick={() => setMobileMenuOpen(false)}>
+                  <Link href="/profile">{t('profile')}</Link>
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    signOut();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  {t('signOut')}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button asChild>
+                  <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                    {t('signIn')}
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                    {t('signUp')}
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

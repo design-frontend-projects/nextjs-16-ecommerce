@@ -1,7 +1,8 @@
-import env from './index';
-export const getEnvSafely = (envKey: string) => {
-  const envVal = process.env[envKey];
-  if (!envVal) throw new Error(`Missing variable ${envKey}!`);
-  return envVal;
+export const getEnvSafely = (envKey: string, defaultValue?: string): string => {
+  const envVal = process.env[envKey] || defaultValue;
+  if (!envVal && defaultValue === undefined) {
+    console.warn(`Environment variable ${envKey} is not set.`);
+  }
+  return envVal || '';
 };
 

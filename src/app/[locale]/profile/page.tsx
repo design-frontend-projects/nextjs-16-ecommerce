@@ -1,6 +1,5 @@
 'use client';
 
-import { useUser, SignOutButton } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import {
   User,
@@ -16,15 +15,40 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoading, signOut } = useAuth();
   const t = useTranslations('profile');
+  const router = useRouter();
 
-  if (!isLoaded) return <div className="p-20 text-center">Loading...</div>;
+  if (isLoading) return <div className="p-20 text-center text-muted-foreground">Loading profile...</div>;
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    (user?.email ? user.email.split('@')[0] : 'User');
+
+  const firstName =
+    user?.user_metadata?.first_name ||
+    (displayName.includes(' ') ? displayName.split(' ')[0] : displayName);
+
+  const lastName =
+    user?.user_metadata?.last_name ||
+    (displayName.includes(' ') ? displayName.split(' ').slice(1).join(' ') : '');
+
+  const avatarUrl =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80';
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/sign-in');
+  };
 
   return (
     <div className="min-h-screen bg-muted/30 pb-20">
@@ -36,18 +60,15 @@ export default function ProfilePage() {
               <CardContent className="p-6 text-center">
                 <div className="relative h-24 w-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary/10">
                   <Image
-                    src={
-                      user?.imageUrl ||
-                      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80'
-                    }
-                    alt={user?.fullName || 'User'}
+                    src={avatarUrl}
+                    alt={displayName}
                     fill
                     className="object-cover"
                   />
                 </div>
-                <h2 className="text-xl font-bold">{user?.fullName}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {user?.primaryEmailAddress?.emailAddress}
+                <h2 className="text-xl font-bold">{displayName}</h2>
+                <p className="text-sm text-muted-foreground truncate">
+                  {user?.email}
                 </p>
                 <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
                   <ShieldCheck className="h-3.5 w-3.5" />
@@ -84,12 +105,13 @@ export default function ProfilePage() {
                 />
 
                 <div className="mt-4 pt-4 border-t px-4 pb-4">
-                  <SignOutButton>
-                    <button className="flex items-center gap-3 text-sm font-medium text-destructive hover:text-destructive/80 transition-colors w-full">
-                      <LogOut className="h-4 w-4" />
-                      {t('signOut')}
-                    </button>
-                  </SignOutButton>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-3 text-sm font-medium text-destructive hover:text-destructive/80 transition-colors w-full cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    {t('signOut')}
+                  </button>
                 </div>
               </div>
             </Card>
@@ -112,20 +134,20 @@ export default function ProfilePage() {
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         First Name
                       </label>
-                      <p className="font-medium">{user?.firstName}</p>
+                      <p className="font-medium">{firstName || '-'}</p>
                     </div>
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Last Name
                       </label>
-                      <p className="font-medium">{user?.lastName}</p>
+                      <p className="font-medium">{lastName || '-'}</p>
                     </div>
                     <div className="space-y-1 sm:col-span-2">
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Email Address
                       </label>
                       <p className="font-medium">
-                        {user?.primaryEmailAddress?.emailAddress}
+                        {user?.email || '-'}
                       </p>
                     </div>
                   </div>

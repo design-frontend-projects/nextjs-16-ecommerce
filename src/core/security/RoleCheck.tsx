@@ -1,11 +1,11 @@
-import type { CurrentUserProps } from '@/types';
+import type { CurrentUserProps, UserRole } from '@/types';
 
-export type UserRole = 'admin' | 'user' | 'guest';
+export type { UserRole };
 
 export function getUserRole(user: CurrentUserProps['currentUser']): UserRole {
   if (!user) return 'guest';
-  // Check metadata or traits
-  return ((user as any).publicMetadata?.role as UserRole) || 'user';
+  if (user.isAdmin) return 'admin';
+  return 'user';
 }
 
 export function hasRole(
@@ -21,6 +21,7 @@ export function hasAnyRole(
   user: CurrentUserProps['currentUser'],
   roles: UserRole[]
 ): boolean {
+  if (!user) return roles.includes('guest');
   const userRole = getUserRole(user);
   return roles.includes(userRole);
 }

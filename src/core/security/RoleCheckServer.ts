@@ -1,4 +1,3 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { getCurrentUser } from '@/lib/auth';
 import type { CurrentUserProps } from '@/types';
 import { redirect } from 'next/navigation';
@@ -47,12 +46,12 @@ export function getServerUserRole(
 }
 
 /**
- * Check if user is authenticated with Clerk
- * @returns Boolean indicating if user is authenticated with Clerk
+ * Check if user is authenticated with Supabase
+ * @returns Boolean indicating if user is authenticated
  */
-export async function isClerkAuthenticated(): Promise<boolean> {
-  const { userId } = await auth();
-  return !!userId;
+export async function isSupabaseAuthenticated(): Promise<boolean> {
+  const user = await getCurrentUser();
+  return !!user;
 }
 
 /**

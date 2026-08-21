@@ -11,7 +11,6 @@ import ProductsSectionTabs from '@/components/features/MainPageProductsComponent
 import Image from 'next/image';
 import OurCustomerCare from '../MainPageProductsComponents/OurCustomerCare';
 import ProductModelCard from '../MainPageProductsComponents/ProductModelCard';
-import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 // import ProductsDataFetch from './products-data-fetch/ProductsDataFetch';
 
 const ProductsMain = () => {
@@ -19,11 +18,6 @@ const ProductsMain = () => {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
-
-  const { user } = useUser();
-  const { has, isSignedIn } = useAuth();
-  console.log('user data in products main: ');
-  console.log(user);
 
   return (
     <>
