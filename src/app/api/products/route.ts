@@ -82,8 +82,8 @@ export async function GET(request: Request) {
     // Transform products to match frontend types
     const transformedProducts = products.map((product) => ({
       ...product,
-      base_price: product.base_price.toString(),
-      cost_price: product.cost_price.toString(),
+      base_price: product.base_price?.toString() || '0',
+      cost_price: '0',
       weight: product.weight?.toString() || null,
       category: product.categories
         ? {

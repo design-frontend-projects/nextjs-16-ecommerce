@@ -125,8 +125,8 @@ export default async function ProductsPage({ params, searchParams }: Props) {
   // Transform products
   const transformedProducts = products.map((product) => ({
     ...product,
-    base_price: product.base_price.toString(),
-    cost_price: product.cost_price.toString(),
+    base_price: product.base_price?.toString() || '0',
+    cost_price: '0',
     weight: product.weight?.toString() || null,
     category: product.categories
       ? {

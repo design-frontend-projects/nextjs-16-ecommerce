@@ -1,10 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import ProductsMain from '@/components/features/ProductsFeature/ProductsMain';
-export default function Home() {
-  return (
-    <div className="flex flex-col items-center w-full overflow-hidden">
-      <ProductsMain />
-    </div>
-  );
+export default function RootPage() {
+  redirect('/en');
 }

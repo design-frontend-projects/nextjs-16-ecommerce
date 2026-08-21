@@ -63,7 +63,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased" style={{ fontFamily: 'var(--font-sans)' }}>
-        <ClerkProvider>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2xlcmsuZXhhbXBsZS5jb20k'}>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <QueryProvider>
               <ThemeProvider

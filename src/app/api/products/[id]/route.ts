@@ -46,8 +46,8 @@ export async function GET(
     // Transform to match frontend types
     const transformedProduct = {
       ...product,
-      base_price: product.base_price.toString(),
-      cost_price: product.cost_price.toString(),
+      base_price: product.base_price?.toString() || '0',
+      cost_price: '0',
       weight: product.weight?.toString() || null,
       category: product.categories
         ? {
@@ -69,8 +69,8 @@ export async function GET(
 
     const transformedRelated = relatedProducts.map((p) => ({
       ...p,
-      base_price: p.base_price.toString(),
-      cost_price: p.cost_price.toString(),
+      base_price: p.base_price?.toString() || '0',
+      cost_price: '0',
       weight: p.weight?.toString() || null,
       category: p.categories
         ? {
