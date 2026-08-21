@@ -97,12 +97,12 @@ export function ProductFilters({
       <div className="space-y-2">
         <Label>{t('search')}</Label>
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
+            className="ps-8"
           />
         </div>
       </div>
@@ -120,7 +120,7 @@ export function ProductFilters({
               onCheckedChange={() => handleCategoryChange(null)}
             />
             <Label htmlFor="cat-all" className="cursor-pointer font-normal">
-              All Categories
+              {t('allCategories')}
             </Label>
           </div>
           {categories.map((cat) => (

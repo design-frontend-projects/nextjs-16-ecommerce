@@ -151,7 +151,8 @@
         "paymentMethods": "Payment Methods",
         "orderHistory": "Order History",
         "wishlist": "Wishlist",
-        "settings": "Settings"
+        "settings": "Settings",
+        "signOut": "Sign Out"
     },
     "auth": {
         "signIn": "Sign In",
@@ -166,7 +167,10 @@
     },
     "filter": {
         "title": "Filters",
+        "search": "Search",
+        "searchPlaceholder": "Search products...",
         "category": "Category",
+        "allCategories": "All Categories",
         "priceRange": "Price Range",
         "sortBy": "Sort By",
         "sortNewest": "Newest",

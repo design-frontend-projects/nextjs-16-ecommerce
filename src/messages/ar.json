@@ -151,7 +151,8 @@
         "paymentMethods": "طرق الدفع",
         "orderHistory": "سجل الطلبات",
         "wishlist": "قائمة الأمنيات",
-        "settings": "الإعدادات"
+        "settings": "الإعدادات",
+        "signOut": "تسجيل الخروج"
     },
     "auth": {
         "signIn": "تسجيل الدخول",
@@ -166,7 +167,10 @@
     },
     "filter": {
         "title": "الفلاتر",
+        "search": "بحث",
+        "searchPlaceholder": "البحث عن منتجات...",
         "category": "التصنيف",
+        "allCategories": "كل التصنيفات",
         "priceRange": "نطاق السعر",
         "sortBy": "ترتيب حسب",
         "sortNewest": "الأحدث",

@@ -97,7 +97,7 @@ export function FilterPanel({ className, onApply }: FilterPanelProps) {
               htmlFor="all-categories"
               className="cursor-pointer flex-1 capitalize"
             >
-              All Categories
+              {t('allCategories')}
             </Label>
           </div>
           {categoriesData?.categories.map((category) => (
