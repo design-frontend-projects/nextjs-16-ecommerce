@@ -120,8 +120,8 @@ export function ProductCard({
 
             <PriceTag price={product.base_price} size="md" />
 
-            {product.inventory && product.inventory.quantity > 0 ? (
-              product.inventory.quantity <= 5 && (
+            {product.inventory && (product.inventory.quantity ?? 0) > 0 ? (
+              (product.inventory.quantity ?? 0) <= 5 && (
                 <span className="text-xs text-muted-foreground">
                   Only {product.inventory.quantity} left
                 </span>

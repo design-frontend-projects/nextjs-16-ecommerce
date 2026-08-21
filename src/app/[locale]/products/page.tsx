@@ -56,7 +56,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
   };
 
   if (categoryId) {
-    where.category_id = parseInt(categoryId, 10);
+    where.category_id = categoryId;
   }
 
   if (search) {
@@ -125,21 +125,26 @@ export default async function ProductsPage({ params, searchParams }: Props) {
   // Transform products
   const transformedProducts = products.map((product) => ({
     ...product,
+    product_id: product.id,
     base_price: product.base_price?.toString() || '0',
     cost_price: '0',
     weight: product.weight?.toString() || null,
     category: product.categories
       ? {
-          category_id: product.categories.category_id,
+          category_id: product.categories.id,
           name: product.categories.name,
           description: product.categories.description,
           created_at: product.categories.created_at?.toISOString() || '',
         }
       : undefined,
-    inventory: product.inventory
+    inventory: product.inventory?.length
       ? {
-          ...product.inventory,
-          quantity: product.inventory.quantity,
+          inventory_id: product.inventory[0].inventory_id,
+          product_id: product.id,
+          quantity: product.inventory.reduce(
+            (sum, inv) => sum + (inv.quantity || 0),
+            0
+          ),
         }
       : undefined,
     created_at: product.created_at?.toISOString() || '',
@@ -148,7 +153,7 @@ export default async function ProductsPage({ params, searchParams }: Props) {
 
   // Transform categories
   const transformedCategories = categories.map((cat) => ({
-    category_id: cat.category_id,
+    category_id: cat.id,
     name: cat.name,
     description: cat.description,
     created_at: cat.created_at?.toISOString() || '',

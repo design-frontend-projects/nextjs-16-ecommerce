@@ -2,16 +2,16 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface FavoritesState {
-  favorites: number[]; // Array of product IDs
+  favorites: (string | number)[]; // Array of product IDs
 
   // Actions
-  addFavorite: (productId: number) => void;
-  removeFavorite: (productId: number) => void;
-  toggleFavorite: (productId: number) => void;
+  addFavorite: (productId: string | number) => void;
+  removeFavorite: (productId: string | number) => void;
+  toggleFavorite: (productId: string | number) => void;
   clearFavorites: () => void;
 
   // Getters
-  isFavorite: (productId: number) => boolean;
+  isFavorite: (productId: string | number) => boolean;
   getFavoritesCount: () => number;
 }
 

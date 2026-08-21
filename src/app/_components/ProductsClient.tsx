@@ -39,7 +39,7 @@ export function ProductsClient() {
   // Sync URL params with store on mount
   useEffect(() => {
     if (categoryFromUrl) {
-      setCategoryId(parseInt(categoryFromUrl, 10));
+      setCategoryId(categoryFromUrl);
     }
   }, [categoryFromUrl, setCategoryId]);
 

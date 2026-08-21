@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     };
 
     if (categoryId) {
-      where.category_id = parseInt(categoryId, 10);
+      where.category_id = categoryId;
     }
 
     if (search) {
@@ -82,21 +82,26 @@ export async function GET(request: Request) {
     // Transform products to match frontend types
     const transformedProducts = products.map((product) => ({
       ...product,
+      product_id: product.id,
       base_price: product.base_price?.toString() || '0',
       cost_price: '0',
       weight: product.weight?.toString() || null,
       category: product.categories
         ? {
-            category_id: product.categories.category_id,
+            category_id: product.categories.id,
             name: product.categories.name,
             description: product.categories.description,
             created_at: product.categories.created_at?.toISOString() || '',
           }
         : null,
-      inventory: product.inventory
+      inventory: product.inventory?.length
         ? {
-            ...product.inventory,
-            quantity: product.inventory.quantity,
+            inventory_id: product.inventory[0].inventory_id,
+            product_id: product.id,
+            quantity: product.inventory.reduce(
+              (sum, inv) => sum + (inv.quantity || 0),
+              0
+            ),
           }
         : null,
       created_at: product.created_at?.toISOString() || '',

@@ -8,11 +8,10 @@ type Props = {
 };
 
 async function getProduct(id: string) {
-  const productId = parseInt(id, 10);
-  if (isNaN(productId)) return null;
+  if (!id) return null;
 
   return await prisma.products.findUnique({
-    where: { product_id: productId },
+    where: { id },
     include: {
       categories: true,
     },

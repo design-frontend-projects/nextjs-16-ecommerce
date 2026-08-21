@@ -8,8 +8,8 @@ interface CartState {
 
   // Actions
   addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: string | number) => void;
+  updateQuantity: (productId: string | number, quantity: number) => void;
   clearCart: () => void;
   toggleCart: () => void;
   openCart: () => void;
@@ -18,8 +18,8 @@ interface CartState {
   // Computed getters
   getItemCount: () => number;
   getSubtotal: () => number;
-  getItem: (productId: number) => CartItem | undefined;
-  isInCart: (productId: number) => boolean;
+  getItem: (productId: string | number) => CartItem | undefined;
+  isInCart: (productId: string | number) => boolean;
 }
 
 export const useCartStore = create<CartState>()(

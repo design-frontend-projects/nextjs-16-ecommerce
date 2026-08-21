@@ -15,7 +15,7 @@ export async function GET() {
 
     // Transform to match frontend types
     const transformedCategories = categories.map((category) => ({
-      category_id: category.category_id,
+      category_id: category.id,
       name: category.name,
       description: category.description,
       created_at: category.created_at?.toISOString() || '',

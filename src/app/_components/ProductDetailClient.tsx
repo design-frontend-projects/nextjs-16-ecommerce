@@ -75,8 +75,8 @@ export function ProductDetailClient({ id }: ProductDetailClientProps) {
   }
 
   const { product, relatedProducts } = data;
-  const inStock = product.inventory && product.inventory.quantity > 0;
-  const lowStock = product.inventory && product.inventory.quantity <= 5;
+  const inStock = Boolean(product.inventory && (product.inventory.quantity ?? 0) > 0);
+  const lowStock = Boolean(product.inventory && (product.inventory.quantity ?? 0) <= 5);
 
   return (
     <div className="min-h-screen pb-16">

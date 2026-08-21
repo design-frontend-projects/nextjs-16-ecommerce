@@ -9,152 +9,114 @@ datasource db {
 }
 
 model categories {
-  category_id  Int        @id @default(autoincrement())
-  name         String     @db.VarChar(100)
+  name         String    @db.VarChar(100)
   description  String?
-  created_at   DateTime?  @default(now()) @db.Timestamp(6)
-  auth_user_id String?    @db.Uuid
-  is_active    Boolean?   @default(true)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id String?   @db.Uuid
+  is_active    Boolean?  @default(true)
+  deleted_at   DateTime? @db.Timestamptz(6)
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String?   @db.Uuid
   products     products[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model customer_cards {
-  card_id          Int         @id @default(autoincrement())
-  customer_id      Int
-  card_type        String?     @db.VarChar(20)
-  last_four_digits String      @db.Char(4)
-  expiry_month     Int         @db.SmallInt
-  expiry_year      Int         @db.SmallInt
-  cardholder_name  String      @db.VarChar(200)
+  card_type        String?   @db.VarChar(20)
+  last_four_digits String    @db.Char(4)
+  expiry_month     Int       @db.SmallInt
+  expiry_year      Int       @db.SmallInt
+  cardholder_name  String    @db.VarChar(200)
   billing_address  String?
-  is_default       Boolean?    @default(false)
-  tokenized_id     String?     @db.VarChar(100)
-  added_at         DateTime?   @default(now()) @db.Timestamp(6)
-  auth_user_id     String?     @default(dbgenerated("auth.uid()")) @db.Uuid
-  customers        customers   @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade, onUpdate: NoAction)
-  pos_sales        pos_sales[]
-
-  @@index([customer_id], map: "idx_customer_cards_customer")
+  is_default       Boolean?  @default(false)
+  tokenized_id     String?   @db.VarChar(100)
+  added_at         DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id     String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id        String?   @db.Uuid
+  customer_id      String    @db.Uuid
+  customers        customers @relation(fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_customer_cards_customers")
 }
 
 model customer_groups {
-  group_id             Int          @id @default(autoincrement())
-  name                 String       @db.VarChar(100)
+  name                 String      @db.VarChar(100)
   description          String?
-  minimum_order_amount Decimal?     @default(0) @db.Decimal(10, 2)
-  discount_percentage  Decimal?     @default(0) @db.Decimal(5, 2)
-  created_at           DateTime?    @default(now()) @db.Timestamp(6)
-  auth_user_id         String?      @default(dbgenerated("auth.uid()")) @db.Uuid
+  minimum_order_amount Decimal?    @default(0) @db.Decimal(10, 2)
+  discount_percentage  Decimal?    @default(0) @db.Decimal(5, 2)
+  created_at           DateTime?   @default(now()) @db.Timestamptz(6)
+  auth_user_id         String?     @default(dbgenerated("auth.uid()")) @db.Uuid
+  id                   String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id            String?     @db.Uuid
   customers            customers[]
-  price_list           price_list[]
 }
 
 model customers {
-  customer_id     Int               @id @default(autoincrement())
-  first_name      String            @db.VarChar(100)
-  last_name       String            @db.VarChar(100)
-  email           String?           @unique @db.VarChar(200)
-  phone           String?           @db.VarChar(50)
-  address_line1   String?           @db.VarChar(200)
-  address_line2   String?           @db.VarChar(200)
-  city            String?           @db.VarChar(100)
-  state           String?           @db.VarChar(100)
-  postal_code     String?           @db.VarChar(20)
-  country         String?           @default("USA") @db.VarChar(100)
-  date_of_birth   DateTime?         @db.Date
-  loyalty_points  Int?              @default(0)
-  is_active       Boolean?          @default(true)
-  created_at      DateTime?         @default(now()) @db.Timestamp(6)
-  updated_at      DateTime?         @default(now()) @db.Timestamp(6)
-  group_id        Int?
-  auth_user_id    String?           @db.Uuid
+  first_name      String           @db.VarChar(100)
+  last_name       String           @db.VarChar(100)
+  email           String?          @db.VarChar(200)
+  phone           String?          @db.VarChar(50)
+  address_line1   String?          @db.VarChar(200)
+  address_line2   String?          @db.VarChar(200)
+  city            String?          @db.VarChar(100)
+  state           String?          @db.VarChar(100)
+  postal_code     String?          @db.VarChar(20)
+  country         String?          @default("USA") @db.VarChar(100)
+  date_of_birth   DateTime?        @db.Date
+  loyalty_points  Int?             @default(0)
+  is_active       Boolean?         @default(true)
+  created_at      DateTime?        @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?        @default(now()) @db.Timestamptz(6)
+  auth_user_id    String?          @default(dbgenerated("auth.uid()")) @db.Uuid
+  deleted_at      DateTime?        @db.Timestamptz(6)
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id       String?          @db.Uuid
+  group_id        String?          @db.Uuid
   customer_cards  customer_cards[]
-  customer_groups customer_groups?  @relation(fields: [group_id], references: [group_id], onUpdate: NoAction)
-  pos_sales       pos_sales[]
-  promotion_usage promotion_usage[]
-  sales_invoices  sales_invoices[]
-  sales_returns   sales_returns[]
+  customer_groups customer_groups? @relation(fields: [group_id], references: [id], onUpdate: NoAction, map: "fk_customers_customer_groups")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model inventory {
   inventory_id    Int       @id @default(autoincrement())
-  product_id      Int       @unique
-  quantity        Int       @default(0)
-  reorder_level   Int?      @default(10)
-  max_stock_level Int?      @default(100)
-  location        String?   @db.VarChar(100)
-  last_restocked  DateTime? @db.Timestamp(6)
-  auth_user_id    String?   @db.Uuid
+  quantity        Int?      @default(0)
+  auth_user_id    String?   @default(dbgenerated("auth.uid()")) @db.Uuid
   store_id        String?   @db.Uuid
-  is_marketplace  Boolean?  @default(false)
-  products        products  @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
-  stores          stores?   @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([quantity], map: "idx_inventory_quantity", where: raw("(quantity < reorder_level)"))
-}
-
-model pos_sales {
-  sale_id         Int               @id @default(autoincrement())
-  customer_id     Int?
-  promotion_id    Int?
-  sale_date       DateTime?         @default(now()) @db.Timestamp(6)
-  subtotal        Decimal           @db.Decimal(10, 2)
-  discount_amount Decimal?          @default(0) @db.Decimal(10, 2)
-  tax_amount      Decimal?          @default(0) @db.Decimal(10, 2)
-  total_amount    Decimal           @db.Decimal(10, 2)
-  payment_method  String?           @db.VarChar(50)
-  card_id         Int?
-  status          String?           @default("completed") @db.VarChar(20)
-  auth_user_id    String?           @default(dbgenerated("auth.uid()")) @db.Uuid
-  customer_cards  customer_cards?   @relation(fields: [card_id], references: [card_id], onUpdate: NoAction)
-  customers       customers?        @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
-  promotions      promotions?       @relation(fields: [promotion_id], references: [promotion_id], onUpdate: NoAction)
-  promotion_usage promotion_usage[]
-  sale_items      sale_items[]
-
-  @@index([customer_id], map: "idx_pos_sales_customer")
-  @@index([sale_date], map: "idx_pos_sales_date")
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  last_count_date DateTime? @db.Timestamptz(6)
+  max_quantity    Int?
+  min_quantity    Int?      @default(0)
+  reorder_point   Int?      @default(0)
+  tenant_id       String?   @db.Uuid
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+  product_id      String?   @db.Uuid
+  products        products? @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model price_list {
-  price_id         Int                @id @default(autoincrement())
-  product_id       Int
-  group_id         Int?
-  price            Decimal            @db.Decimal(10, 2)
-  start_date       DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Date
-  end_date         DateTime?          @db.Date
-  is_active        Boolean?           @default(true)
-  auth_user_id     String?            @default(dbgenerated("auth.uid()")) @db.Uuid
-  description      String?
-  type             price_list_types?
-  store_id         String?            @db.Uuid
-  customer_groups  customer_groups?   @relation(fields: [group_id], references: [group_id], onDelete: Cascade, onUpdate: NoAction)
-  products         products           @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
-  stores           stores?            @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
-  price_list_items price_list_items[]
-  sales_invoices   sales_invoices[]
-
-  @@unique([product_id, group_id], map: "unique_product_group_active")
-  @@index([group_id], map: "idx_price_list_group")
-  @@index([product_id], map: "idx_price_list_product")
-  @@index([is_active], map: "idx_price_list_active", where: raw("(is_active = true)"))
+  price        Decimal           @db.Decimal(10, 2)
+  start_date   DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Date
+  end_date     DateTime?         @db.Date
+  is_active    Boolean?          @default(true)
+  auth_user_id String?           @default(dbgenerated("auth.uid()")) @db.Uuid
+  description  String?
+  type         price_list_types?
+  store_id     String?           @db.Uuid
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String?           @db.Uuid
+  product_id   String            @db.Uuid
+  group_id     String?           @db.Uuid
 }
 
 model products {
-  product_id             Int                    @id @default(autoincrement())
-  supplier_id            Int?
   name                   String                 @db.VarChar(200)
   description            String?
-  sku                    String                 @unique @db.VarChar(50)
+  sku                    String                 @db.VarChar(50)
   barcode                String?                @db.VarChar(100)
-  category_id            Int?
   weight                 Decimal?               @db.Decimal(8, 2)
   dimensions             String?                @db.VarChar(50)
   is_active              Boolean?               @default(true)
-  created_at             DateTime?              @default(now()) @db.Timestamp(6)
-  updated_at             DateTime?              @default(now()) @db.Timestamp(6)
+  created_at             DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime?              @default(now()) @db.Timestamptz(6)
   reorder_level          Decimal?               @db.Decimal
   product_name_embedding Unsupported("vector")?
   auth_user_id           String?                @db.Uuid
@@ -165,293 +127,251 @@ model products {
   has_expiration         Boolean?               @default(false)
   expiration_date        DateTime?              @db.Date
   is_marketplace         Boolean?               @default(false)
-  inventory              inventory?
+  base_uom_id            String?                @db.Uuid
+  brand_id               String?                @db.Uuid
+  is_batch_tracked       Boolean                @default(false)
+  is_serial_tracked      Boolean                @default(false)
+  product_type           product_type_enum      @default(simple)
+  deleted_at             DateTime?              @db.Timestamptz(6)
+  id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id              String?                @db.Uuid
+  supplier_id            String?                @db.Uuid
+  category_id            String?                @db.Uuid
   pos_reorder_requests   pos_reorder_requests[]
-  price_list             price_list[]
   product_variants       product_variants[]
-  categories             categories?            @relation(fields: [category_id], references: [category_id], onUpdate: NoAction)
-  suppliers              suppliers?             @relation(fields: [supplier_id], references: [supplier_id], onUpdate: NoAction)
+  uoms                   uoms?                  @relation(fields: [base_uom_id], references: [id], onUpdate: NoAction)
+  brands                 brands?                @relation(fields: [brand_id], references: [id], onUpdate: NoAction)
+  categories             categories?            @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory              inventory[]
   purchase_order_items   purchase_order_items[]
-  sale_items             sale_items[]
-  transaction_details    transaction_details[]
-
-  @@index([category_id], map: "idx_products_category")
-  @@index([sku], map: "idx_products_sku")
-  @@index([supplier_id], map: "idx_products_supplier")
 }
 
 model promotion_usage {
-  usage_id        Int         @id @default(autoincrement())
-  promotion_id    Int
-  customer_id     Int?
-  sale_id         Int?
-  used_at         DateTime?   @default(now()) @db.Timestamp(6)
-  order_id        Int?
-  auth_user_id    String?     @default(dbgenerated("auth.uid()")) @db.Uuid
-  created_at      DateTime?   @default(now()) @db.Timestamptz(6)
-  customer_mobile String?     @db.VarChar(50)
-  res_order_id    String?     @unique(map: "uq_promotion_usage_res_order", where: raw("(res_order_id IS NOT NULL)")) @db.Uuid
-  updated_at      DateTime?   @default(now()) @db.Timestamptz(6)
-  customers       customers?  @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
-  promotions      promotions  @relation(fields: [promotion_id], references: [promotion_id], onDelete: Cascade, onUpdate: NoAction)
-  res_orders      res_orders? @relation(fields: [res_order_id], references: [id], onUpdate: NoAction)
-  pos_sales       pos_sales?  @relation(fields: [sale_id], references: [sale_id], onUpdate: NoAction)
-
-  @@index([promotion_id, customer_mobile], map: "idx_promotion_usage_promo_mobile")
-  @@index([res_order_id], map: "idx_promotion_usage_res_order")
+  used_at         DateTime? @default(now()) @db.Timestamptz(6)
+  order_id        String?
+  auth_user_id    String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  customer_mobile String?   @db.VarChar(50)
+  res_order_id    String?   @db.Uuid
+  updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id       String?   @db.Uuid
+  promotion_id    String    @db.Uuid
+  customer_id     String?   @db.Uuid
+  sale_id         String?   @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model promotions {
-  promotion_id          Int                     @id @default(autoincrement())
-  code                  String?                 @unique @db.VarChar(50)
-  name                  String                  @db.VarChar(200)
-  description           String?
-  discount_type         String?                 @db.VarChar(20)
-  discount_value        Decimal                 @db.Decimal(10, 2)
-  minimum_purchase      Decimal?                @default(0) @db.Decimal(10, 2)
-  start_date            DateTime                @db.Timestamp(6)
-  end_date              DateTime                @db.Timestamp(6)
-  usage_limit           Int?
-  usage_per_customer    Int?                    @default(1)
-  is_active             Boolean?                @default(true)
-  created_at            DateTime?               @default(now()) @db.Timestamp(6)
-  auth_user_id          String?                 @default(dbgenerated("auth.uid()")) @db.Uuid
-  activities            String[]                @default(["dine_in", "takeaway", "delivery"])
-  buy_quantity          Int?
-  get_discount_value    Decimal?                @default(100) @db.Decimal(10, 2)
-  get_quantity          Int?
-  promo_type            String                  @default("order_discount") @db.VarChar(30)
-  updated_at            DateTime?               @default(now()) @db.Timestamptz(6)
-  pos_sales             pos_sales[]
-  promotion_menu_scopes promotion_menu_scopes[]
-  promotion_usage       promotion_usage[]
-  res_orders            res_orders[]
-
-  @@index([code], map: "idx_promotions_code")
-  @@index([start_date, end_date], map: "idx_promotions_active_dates", where: raw("(is_active = true)"))
+  code               String?             @db.VarChar(50)
+  name               String              @db.VarChar(200)
+  description        String?
+  discount_value     Decimal             @db.Decimal(10, 2)
+  minimum_purchase   Decimal?            @default(0) @db.Decimal(10, 2)
+  start_date         DateTime            @db.Timestamptz(6)
+  end_date           DateTime            @db.Timestamptz(6)
+  usage_limit        Int?
+  usage_per_customer Int?                @default(1)
+  is_active          Boolean?            @default(true)
+  created_at         DateTime?           @default(now()) @db.Timestamptz(6)
+  auth_user_id       String?             @default(dbgenerated("auth.uid()")) @db.Uuid
+  activities         String[]            @default(["dine_in", "takeaway", "delivery"])
+  buy_quantity       Int?
+  get_discount_value Decimal?            @default(100) @db.Decimal(10, 2)
+  get_quantity       Int?
+  promo_type         String              @default("order_discount") @db.VarChar(30)
+  updated_at         DateTime?           @default(now()) @db.Timestamptz(6)
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String?             @db.Uuid
+  discount_type      discount_type_enum?
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model purchase_order_items {
-  po_item_id        Int             @id @default(autoincrement())
-  po_id             Int
-  product_id        Int
-  quantity_ordered  Int
-  unit_cost         Decimal         @db.Decimal(10, 2)
-  auth_user_id      String?         @default(dbgenerated("auth.uid()")) @db.Uuid
-  subtotal          Decimal?        @db.Decimal
-  received_quantity Decimal?        @db.Decimal
-  purchase_orders   purchase_orders @relation(fields: [po_id], references: [po_id], onDelete: Cascade, onUpdate: NoAction)
-  products          products        @relation(fields: [product_id], references: [product_id], onUpdate: NoAction)
+  quantity_ordered   Int
+  unit_cost          Decimal           @db.Decimal(10, 2)
+  auth_user_id       String?           @default(dbgenerated("auth.uid()")) @db.Uuid
+  subtotal           Decimal?          @db.Decimal
+  received_quantity  Decimal?          @db.Decimal
+  product_variant_id String?           @db.Uuid
+  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String?           @db.Uuid
+  po_id              String            @db.Uuid
+  product_id         String            @db.Uuid
+  purchase_orders    purchase_orders   @relation(fields: [po_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_purchase_order_items_po")
+  products           products          @relation(fields: [product_id], references: [id], onUpdate: NoAction, map: "fk_purchase_order_items_products")
+  product_variants   product_variants? @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction, map: "fk_purchase_order_items_variants")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model purchase_orders {
-  po_id                  Int                    @id @default(autoincrement())
-  supplier_id            Int
-  order_date             DateTime?              @default(now()) @db.Timestamp(6)
-  expected_delivery_date DateTime?              @db.Date
-  total_amount           Decimal?               @db.Decimal(12, 2)
-  status                 String?                @default("pending") @db.VarChar(20)
+  order_date             DateTime?                 @default(now()) @db.Timestamptz(6)
+  expected_delivery_date DateTime?                 @db.Date
+  total_amount           Decimal?                  @db.Decimal(12, 2)
+  status                 String?                   @default("pending") @db.VarChar(20)
   notes                  String?
   po_number              Int?
-  created_at             DateTime?              @db.Date
-  discounnt_amount       Decimal?               @db.Decimal
-  shipping_amount        Decimal?               @db.Decimal
-  tax_amount             Decimal?               @db.Decimal
+  created_at             DateTime?                 @db.Date
+  shipping_amount        Decimal?                  @db.Decimal
+  tax_amount             Decimal?                  @db.Decimal
   payment_status         String?
-  auth_user_id           String?                @default(dbgenerated("auth.uid()")) @db.Uuid
+  auth_user_id           String?                   @default(dbgenerated("auth.uid()")) @db.Uuid
+  approved_at            DateTime?                 @db.Timestamptz(6)
+  approved_by            String?
+  branch_id              String?                   @db.Uuid
+  closed_at              DateTime?                 @db.Timestamptz(6)
+  lifecycle_status       po_lifecycle_status_enum?
+  sent_at                DateTime?                 @db.Timestamptz(6)
+  store_id               String?                   @db.Uuid
+  warehouse_id           String?                   @db.Uuid
+  discount_amount        Decimal?                  @db.Decimal(12, 2)
+  id                     String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id              String?                   @db.Uuid
+  supplier_id            String                    @db.Uuid
   purchase_order_items   purchase_order_items[]
-  suppliers              suppliers              @relation(fields: [supplier_id], references: [supplier_id], onUpdate: NoAction)
-
-  @@index([status], map: "idx_purchase_orders_status")
-  @@index([supplier_id], map: "idx_purchase_orders_supplier")
+  suppliers              suppliers                 @relation(fields: [supplier_id], references: [id], onUpdate: NoAction, map: "fk_purchase_orders_suppliers")
 }
 
 model refunds {
-  refund_id        BigInt          @id @default(autoincrement())
   sale_id          String?
   order_id         String?
-  refund_date      DateTime?       @default(now()) @db.Timestamp(6)
-  refund_amount    Decimal         @db.Decimal(10, 2)
-  reason           String?         @db.VarChar(255)
+  refund_date      DateTime?      @default(now()) @db.Timestamptz(6)
+  refund_amount    Decimal        @db.Decimal(10, 2)
+  reason           String?        @db.VarChar(255)
   processed_by     String?
   notes            String?
-  auth_user_id     String?         @default(dbgenerated("auth.uid()")) @db.Uuid
+  auth_user_id     String?        @default(dbgenerated("auth.uid()")) @db.Uuid
   refund_status    refund_status?
-  store_id         String?         @db.Uuid
-  sales_invoice_id String?         @db.Uuid
-  branch_id        String?         @db.Uuid
+  store_id         String?        @db.Uuid
+  sales_invoice_id String?        @db.Uuid
+  branch_id        String?        @db.Uuid
   created_by       String?
-  branches         branches?       @relation(fields: [branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sales_invoices   sales_invoices? @relation(fields: [sales_invoice_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  stores           stores?         @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([order_id], map: "idx_refunds_order")
-  @@index([sale_id], map: "idx_refunds_sale")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model sale_items {
-  sale_item_id Int       @id @default(autoincrement())
-  sale_id      Int
-  product_id   Int
-  quantity     Int
-  unit_price   Decimal   @db.Decimal(10, 2)
-  subtotal     Decimal?  @db.Decimal(10, 2)
-  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
-  products     products  @relation(fields: [product_id], references: [product_id], onUpdate: NoAction)
-  pos_sales    pos_sales @relation(fields: [sale_id], references: [sale_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([product_id], map: "idx_sale_items_product")
-  @@index([sale_id], map: "idx_sale_items_sale")
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  res_order_id     String?        @db.Uuid
+  tenant_id        String?        @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model shipments {
-  shipment_id     Int                  @id @default(autoincrement())
-  order_id        Int
-  tracking_number String?              @db.VarChar(100)
-  shipped_date    DateTime?            @db.Timestamp(6)
-  delivered_date  DateTime?            @db.Timestamp(6)
-  carrier         String?              @db.VarChar(100)
-  status          shipment_status_enum @default(prepared)
-  notes           String?
-  auth_user_id    String?              @default(dbgenerated("auth.uid()")) @db.Uuid
-
-  @@index([order_id], map: "idx_shipments_order")
+  tracking_number  String?              @db.VarChar(100)
+  shipped_date     DateTime?            @db.Timestamptz(6)
+  delivered_date   DateTime?            @db.Timestamptz(6)
+  carrier          String?              @db.VarChar(100)
+  status           shipment_status_enum @default(prepared)
+  notes            String?
+  auth_user_id     String?              @default(dbgenerated("auth.uid()")) @db.Uuid
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sales_invoice_id String?              @db.Uuid
+  tenant_id        String?              @db.Uuid
+  order_id         String?              @db.Uuid
 }
 
 model shipping_methods {
-  method_id          Int              @id @default(autoincrement())
-  name               String           @db.VarChar(100)
+  name               String   @db.VarChar(100)
   description        String?
-  carrier            String?          @db.VarChar(100)
+  carrier            String?  @db.VarChar(100)
   estimated_days_min Int?
   estimated_days_max Int?
-  is_active          Boolean?         @default(true)
-  shipping_rates     shipping_rates[]
+  is_active          Boolean? @default(true)
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String?  @db.Uuid
 }
 
 model shipping_rates {
-  rate_id                 Int              @id @default(autoincrement())
-  method_id               Int
-  destination_country     String?          @default("USA") @db.VarChar(100)
-  destination_state       String?          @db.VarChar(100)
-  destination_postal_code String?          @db.VarChar(20)
-  min_weight              Decimal?         @default(0) @db.Decimal(8, 2)
-  max_weight              Decimal?         @db.Decimal(8, 2)
-  min_order_amount        Decimal?         @default(0) @db.Decimal(10, 2)
-  max_order_amount        Decimal?         @db.Decimal(10, 2)
-  cost                    Decimal          @db.Decimal(10, 2)
-  is_free                 Boolean?         @default(false)
-  auth_user_id            String?          @default(dbgenerated("auth.uid()")) @db.Uuid
-  shipping_methods        shipping_methods @relation(fields: [method_id], references: [method_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([method_id, destination_country, destination_state, destination_postal_code, min_weight], map: "unique_rate_specificity")
-  @@index([method_id], map: "idx_shipping_rates_method")
+  destination_country     String?  @default("USA") @db.VarChar(100)
+  destination_state       String?  @db.VarChar(100)
+  destination_postal_code String?  @db.VarChar(20)
+  min_weight              Decimal? @default(0) @db.Decimal(8, 2)
+  max_weight              Decimal? @db.Decimal(8, 2)
+  min_order_amount        Decimal? @default(0) @db.Decimal(10, 2)
+  max_order_amount        Decimal? @db.Decimal(10, 2)
+  cost                    Decimal  @db.Decimal(10, 2)
+  is_free                 Boolean? @default(false)
+  auth_user_id            String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+  id                      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id               String?  @db.Uuid
+  method_id               String   @db.Uuid
 }
 
 model suppliers {
-  supplier_id       Int                 @id @default(autoincrement())
-  name              String              @db.VarChar(200)
-  contact_person    String?             @db.VarChar(100)
-  email             String?             @db.VarChar(200)
-  phone             String?             @db.VarChar(50)
-  address           String?
-  website           String?             @db.VarChar(200)
-  notes             String?
-  created_at        DateTime?           @default(now()) @db.Timestamp(6)
-  auth_user_id      String?             @default(dbgenerated("auth.uid()")) @db.Uuid
-  city_id           String?             @db.Uuid
-  is_preferred      Boolean?            @default(false)
-  is_system         Boolean?            @default(false)
-  products          products[]
-  purchase_invoices purchase_invoices[]
-  purchase_orders   purchase_orders[]
-  purchase_returns  purchase_returns[]
-  cities            cities?             @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  name            String            @db.VarChar(200)
+  contact_person  String?           @db.VarChar(100)
+  email           String?           @db.VarChar(200)
+  phone           String?           @db.VarChar(50)
+  address         String?
+  website         String?           @db.VarChar(200)
+  notes           String?
+  created_at      DateTime?         @default(now()) @db.Timestamptz(6)
+  auth_user_id    String?           @default(dbgenerated("auth.uid()")) @db.Uuid
+  city_id         String?           @db.Uuid
+  is_preferred    Boolean?          @default(false)
+  is_system       Boolean?          @default(false)
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id       String?           @db.Uuid
+  purchase_orders purchase_orders[]
+  cities          cities?           @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model tax_rates {
-  tax_rate_id            Int                      @id @default(autoincrement())
-  tax_type               String                   @db.VarChar(50)
-  rate                   Float                    @db.Real
-  description            String?
-  effective_from         DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Date
-  effective_to           DateTime?                @db.Date
-  is_active              Boolean?                 @default(true)
-  created_at             DateTime?                @default(now()) @db.Timestamp(6)
-  is_inclusive           Boolean?                 @default(false)
-  auth_user_id           String?                  @db.Uuid
-  country_id             String?                  @db.Uuid
-  purchase_invoice_items purchase_invoice_items[]
-  sales_invoice_items    sales_invoice_items[]
-  countries              countries?               @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([effective_from, effective_to], map: "idx_tax_rates_active_dates", where: raw("(is_active = true)"))
+  tax_type       String     @db.VarChar(50)
+  rate           Decimal    @db.Decimal
+  description    String?
+  effective_from DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  effective_to   DateTime?  @db.Date
+  is_active      Boolean?   @default(true)
+  created_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  is_inclusive   Boolean?   @default(false)
+  auth_user_id   String?    @db.Uuid
+  country_id     String?    @db.Uuid
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id      String?    @db.Uuid
+  countries      countries? @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model activity_types {
-  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code        String       @unique @db.VarChar(50)
-  name        String       @db.VarChar(100)
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String    @db.VarChar(50)
+  name        String    @db.VarChar(100)
   description String?
-  is_active   Boolean      @default(true)
-  created_at  DateTime?    @default(now()) @db.Timestamp(6)
-  audit_logs  audit_logs[]
+  is_active   Boolean   @default(true)
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model audit_logs {
-  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  profile_id       String         @db.Uuid
-  activity_type_id String         @db.Uuid
-  action           String         @db.VarChar(255)
-  entity_type      String         @db.VarChar(100)
-  entity_id        String         @db.VarChar(100)
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activity_type_id String    @db.Uuid
+  action           String    @db.VarChar(255)
+  entity_type      String    @db.VarChar(100)
+  entity_id        String    @db.VarChar(100)
   old_values       Json?
   new_values       Json?
   metadata         Json?
-  ip_address       String?        @db.VarChar(45)
+  ip_address       String?   @db.VarChar(45)
   user_agent       String?
-  created_at       DateTime?      @default(now()) @db.Timestamp(6)
-  activity_types   activity_types @relation(fields: [activity_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profiles         profiles       @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([activity_type_id], map: "idx_audit_logs_activity_type_id")
-  @@index([created_at], map: "idx_audit_logs_created_at")
-  @@index([entity_type, entity_id], map: "idx_audit_logs_entity")
-  @@index([profile_id], map: "idx_audit_logs_profile_id")
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+  user_id          String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model branches {
-  id                                                       String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                                                     String                @db.VarChar(200)
-  city_id                                                  String                @db.Uuid
-  address                                                  String?
-  phone                                                    String?               @db.VarChar(20)
-  is_active                                                Boolean?              @default(true)
-  created_at                                               DateTime?             @default(now()) @db.Timestamptz(6)
-  updated_at                                               DateTime?             @default(now()) @db.Timestamptz(6)
-  auth_user_id                                             String?               @db.Uuid
-  cities                                                   cities                @relation(fields: [city_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  inventory_movements                                      inventory_movements[]
-  profiles                                                 profiles[]
-  purchase_invoices                                        purchase_invoices[]
-  purchase_returns                                         purchase_returns[]
-  refunds                                                  refunds[]
-  sales_invoices                                           sales_invoices[]
-  sales_returns                                            sales_returns[]
-  stock_transfers_stock_transfers_from_branch_idTobranches stock_transfers[]     @relation("stock_transfers_from_branch_idTobranches")
-  stock_transfers_stock_transfers_to_branch_idTobranches   stock_transfers[]     @relation("stock_transfers_to_branch_idTobranches")
-  stores                                                   stores[]
-
-  @@index([city_id], map: "idx_branches_city_id")
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String         @db.VarChar(200)
+  city_id      String         @db.Uuid
+  address      String?
+  phone        String?        @db.VarChar(20)
+  is_active    Boolean?       @default(true)
+  created_at   DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime?      @default(now()) @db.Timestamptz(6)
+  auth_user_id String?        @db.Uuid
+  tenant_id    String?        @db.Uuid
+  cities       cities         @relation(fields: [city_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  stores       stores[]
+  tenant_users tenant_users[]
+  tenants      tenants[]
+  warehouses   warehouses[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -466,81 +386,81 @@ model cities {
   countries  countries   @relation(fields: [country_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   stores     stores[]
   suppliers  suppliers[]
-
-  @@unique([name, country_id])
-  @@index([country_id], map: "idx_cities_country_id")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model countries {
-  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String      @unique @db.VarChar(100)
-  code       String      @unique @db.VarChar(3)
-  phone_code String?     @db.VarChar(10)
-  is_active  Boolean?    @default(true)
-  created_at DateTime?   @default(now()) @db.Timestamptz(6)
-  updated_at DateTime?   @default(now()) @db.Timestamptz(6)
-  cities     cities[]
-  stores     stores[]
-  tax_rates  tax_rates[]
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @db.VarChar(100)
+  code        String      @db.VarChar(3)
+  phone_code  String?     @db.VarChar(10)
+  is_active   Boolean?    @default(true)
+  created_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  currency_id String?     @db.Uuid
+  cities      cities[]
+  currencies  currencies? @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  stores      stores[]
+  tax_rates   tax_rates[]
+  tenants     tenants[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model currencies {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String    @db.VarChar(100)
-  code         String    @unique @db.VarChar(3)
-  symbol       String    @db.VarChar(5)
-  is_active    Boolean?  @default(true)
-  created_at   DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
-  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model employee_roles {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id String    @db.Uuid
-  role_id      String    @db.Uuid
-  assigned_at  DateTime? @default(now()) @db.Timestamptz(6)
-  assigned_by  String?
-  roles        roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([role_id])
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String      @db.VarChar(100)
+  code       String      @db.VarChar(3)
+  symbol     String      @db.VarChar(5)
+  is_active  Boolean?    @default(true)
+  created_at DateTime?   @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?   @default(now()) @db.Timestamptz(6)
+  countries  countries[]
+  tenants    tenants[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model inventory_movements {
-  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id       String             @db.Uuid
-  branch_id          String             @db.Uuid
-  store_id           String?            @db.Uuid
-  product_variant_id String             @db.Uuid
-  movement_type      movement_type_enum
-  reference_type     String?            @db.VarChar(100)
-  reference_id       String?            @db.Uuid
-  qty_in             Decimal            @default(0) @db.Decimal(18, 4)
-  qty_out            Decimal            @default(0) @db.Decimal(18, 4)
-  unit_cost          Decimal            @default(0) @db.Decimal(18, 4)
-  total_cost         Decimal            @default(0) @db.Decimal(18, 4)
-  movement_date      DateTime           @default(now()) @db.Timestamptz(6)
-  remarks            String?
-  created_by         String?
-  created_at         DateTime           @default(now()) @db.Timestamptz(6)
-  branches           branches           @relation(fields: [branch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  product_variants   product_variants   @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  stores             stores?            @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
+  id                         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id               String             @db.Uuid
+  branch_id                  String             @db.Uuid
+  store_id                   String?            @db.Uuid
+  product_variant_id         String             @db.Uuid
+  movement_type              movement_type_enum
+  reference_type             String?            @db.VarChar(100)
+  reference_id               String?            @db.Uuid
+  qty_in                     Decimal            @default(0) @db.Decimal(18, 4)
+  qty_out                    Decimal            @default(0) @db.Decimal(18, 4)
+  unit_cost                  Decimal            @default(0) @db.Decimal(18, 4)
+  total_cost                 Decimal            @default(0) @db.Decimal(18, 4)
+  movement_date              DateTime           @default(now()) @db.Timestamptz(6)
+  remarks                    String?
+  created_by                 String?
+  created_at                 DateTime           @default(now()) @db.Timestamptz(6)
+  batch_id                   String?            @db.Uuid
+  dest_store_id              String?            @db.Uuid
+  dest_warehouse_location_id String?            @db.Uuid
+  idempotency_key            String?
+  movement_group_id          String?            @db.Uuid
+  qty_after                  Decimal?           @db.Decimal(18, 4)
+  qty_before                 Decimal?           @db.Decimal(18, 4)
+  reason_code                String?            @db.VarChar(40)
+  source_document_id         String?            @db.Uuid
+  source_document_type       String?            @db.VarChar(40)
+  warehouse_id               String?            @db.Uuid
+  warehouse_location_id      String?            @db.Uuid
+  tenant_id                  String?            @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model payment_types {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String    @unique
+  name         String
   is_enabled   Boolean   @default(true)
   created_at   DateTime? @default(now()) @db.Timestamptz(6)
   updated_at   DateTime? @default(now()) @db.Timestamptz(6)
   auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id    String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -561,191 +481,141 @@ model permissions {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model pos_terminals {
-  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id         String           @default(dbgenerated("auth.uid()")) @db.Uuid
-  store_id             String?          @db.Uuid
-  name                 String           @db.VarChar(150)
-  code                 String           @db.VarChar(100)
-  device_identifier    String?          @db.VarChar(255)
-  receipt_printer_name String?          @db.VarChar(255)
-  status               record_status    @default(active)
-  created_at           DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime         @default(now()) @db.Timestamptz(6)
-  stores               stores?          @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
-  sales_invoices       sales_invoices[]
+  id                   String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id         String        @default(dbgenerated("auth.uid()")) @db.Uuid
+  store_id             String?       @db.Uuid
+  name                 String        @db.VarChar(150)
+  code                 String        @db.VarChar(100)
+  device_identifier    String?       @db.VarChar(255)
+  receipt_printer_name String?       @db.VarChar(255)
+  status               record_status @default(active)
+  created_at           DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime      @default(now()) @db.Timestamptz(6)
+  tenant_id            String?       @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model price_list_items {
-  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  price_list_id        Int
-  product_variant_id   String           @db.Uuid
-  price                Decimal          @db.Decimal(18, 4)
-  min_price            Decimal          @default(0) @db.Decimal(18, 4)
-  max_discount_percent Decimal          @default(0) @db.Decimal(7, 4)
-  created_at           DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime         @default(now()) @db.Timestamptz(6)
-  auth_user_id         String?          @default(dbgenerated("auth.uid()")) @db.Uuid
-  price_list           price_list       @relation(fields: [price_list_id], references: [price_id], onDelete: Cascade, onUpdate: NoAction)
-  product_variants     product_variants @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([price_list_id, product_variant_id])
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_variant_id   String   @db.Uuid
+  price                Decimal  @db.Decimal(18, 4)
+  min_price            Decimal  @default(0) @db.Decimal(18, 4)
+  max_discount_percent Decimal  @default(0) @db.Decimal(7, 4)
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @default(now()) @db.Timestamptz(6)
+  auth_user_id         String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id            String?  @db.Uuid
+  price_list_id        String   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model product_variants {
-  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  product_id             Int
-  sku                    String                   @unique @db.VarChar(100)
-  barcode                String?                  @db.VarChar(100)
-  price                  Decimal                  @db.Decimal(10, 2)
-  cost_price             Decimal?                 @db.Decimal(10, 2)
-  stock_quantity         Int?                     @default(0)
-  min_stock              Int?                     @default(0)
-  weight                 Decimal?                 @db.Decimal(10, 2)
-  dimensions             Json?
-  is_active              Boolean?                 @default(true)
-  created_at             DateTime?                @default(now()) @db.Timestamp(6)
-  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
-  auth_user_id           String?                  @default(dbgenerated("auth.uid()")) @db.Uuid
-  inventory_movements    inventory_movements[]
-  pos_reorder_requests   pos_reorder_requests[]
-  price_list_items       price_list_items[]
-  products               products                 @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
-  purchase_invoice_items purchase_invoice_items[]
-  purchase_return_items  purchase_return_items[]
-  sales_invoice_items    sales_invoice_items[]
-  sales_return_items     sales_return_items[]
-  stock_adjustment_items stock_adjustment_items[]
-  stock_balances         stock_balances[]
-  stock_transfer_items   stock_transfer_items[]
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model profiles {
-  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email               String?      @unique @db.VarChar(255)
-  first_name          String?      @db.VarChar(100)
-  last_name           String?      @db.VarChar(100)
-  phone               String?      @db.VarChar(20)
-  is_owner            Boolean      @default(true)
-  system_owner        Boolean      @default(false)
-  onboarding_complete Boolean      @default(false)
-  created_at          DateTime?    @default(now()) @db.Timestamp(6)
-  updated_at          DateTime?    @default(now()) @db.Timestamp(6)
-  activity            String?      @db.VarChar(100)
-  auth_user_id        String       @db.Uuid
-  is_paid             Boolean      @default(false)
-  branch_id           String?      @db.Uuid
-  role                String?
-  audit_logs          audit_logs[]
-  branches            branches?    @relation(fields: [branch_id], references: [id], onUpdate: NoAction)
-
-  @@index([email], map: "idx_profiles_email")
-  @@index([branch_id], map: "idx_profiles_branch_id")
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku                  String                 @db.VarChar(100)
+  barcode              String?                @db.VarChar(100)
+  price                Decimal                @db.Decimal(10, 2)
+  cost_price           Decimal?               @db.Decimal(10, 2)
+  stock_quantity       Int?                   @default(0)
+  min_stock            Int?                   @default(0)
+  weight               Decimal?               @db.Decimal(10, 2)
+  dimensions           Json?
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime?              @default(now()) @db.Timestamptz(6)
+  auth_user_id         String?                @default(dbgenerated("auth.uid()")) @db.Uuid
+  uom_id               String?                @db.Uuid
+  product_id           String                 @db.Uuid
+  pos_reorder_requests pos_reorder_requests[]
+  products             products               @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_variants_products")
+  purchase_order_items purchase_order_items[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model purchase_invoice_items {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  purchase_invoice_id   String                  @db.Uuid
-  product_variant_id    String                  @db.Uuid
-  tax_rate_id           Int?
-  line_no               Int                     @default(1)
-  description           String?                 @db.VarChar(255)
-  quantity              Decimal                 @db.Decimal(18, 4)
-  unit_cost             Decimal                 @db.Decimal(18, 4)
-  discount_type         discount_type_enum?
-  discount_value        Decimal                 @default(0) @db.Decimal(18, 4)
-  discount_amount       Decimal                 @default(0) @db.Decimal(18, 4)
-  tax_amount            Decimal                 @default(0) @db.Decimal(18, 4)
-  line_subtotal         Decimal                 @default(0) @db.Decimal(18, 4)
-  line_total            Decimal                 @default(0) @db.Decimal(18, 4)
-  created_at            DateTime                @default(now()) @db.Timestamptz(6)
-  product_variants      product_variants        @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction)
-  purchase_invoices     purchase_invoices       @relation(fields: [purchase_invoice_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  tax_rates             tax_rates?              @relation(fields: [tax_rate_id], references: [tax_rate_id], onUpdate: NoAction)
-  purchase_return_items purchase_return_items[]
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchase_invoice_id String              @db.Uuid
+  product_variant_id  String              @db.Uuid
+  line_no             Int                 @default(1)
+  description         String?             @db.VarChar(255)
+  quantity            Decimal             @db.Decimal(18, 4)
+  unit_cost           Decimal             @db.Decimal(18, 4)
+  discount_type       discount_type_enum?
+  discount_value      Decimal             @default(0) @db.Decimal(18, 4)
+  discount_amount     Decimal             @default(0) @db.Decimal(18, 4)
+  tax_amount          Decimal             @default(0) @db.Decimal(18, 4)
+  line_subtotal       Decimal             @default(0) @db.Decimal(18, 4)
+  line_total          Decimal             @default(0) @db.Decimal(18, 4)
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  tax_rate_id         String?             @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model purchase_invoices {
-  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id           String                   @default(dbgenerated("auth.uid()")) @db.Uuid
-  branch_id              String                   @db.Uuid
-  store_id               String?                  @db.Uuid
-  supplier_id            Int
-  invoice_no             String                   @db.VarChar(100)
-  supplier_invoice_no    String?                  @db.VarChar(100)
-  invoice_date           DateTime                 @default(now()) @db.Timestamptz(6)
-  due_date               DateTime?                @db.Timestamptz(6)
-  status                 invoice_status_enum      @default(draft)
-  subtotal               Decimal                  @default(0) @db.Decimal(18, 4)
-  discount_type          discount_type_enum?
-  discount_value         Decimal                  @default(0) @db.Decimal(18, 4)
-  discount_amount        Decimal                  @default(0) @db.Decimal(18, 4)
-  tax_amount             Decimal                  @default(0) @db.Decimal(18, 4)
-  rounding_amount        Decimal                  @default(0) @db.Decimal(18, 4)
-  total_amount           Decimal                  @default(0) @db.Decimal(18, 4)
-  paid_amount            Decimal                  @default(0) @db.Decimal(18, 4)
-  due_amount             Decimal                  @default(0) @db.Decimal(18, 4)
-  notes                  String?
-  created_by             String?
-  updated_by             String?
-  posted_at              DateTime?                @db.Timestamptz(6)
-  created_at             DateTime                 @default(now()) @db.Timestamptz(6)
-  updated_at             DateTime                 @default(now()) @db.Timestamptz(6)
-  purchase_invoice_items purchase_invoice_items[]
-  branches               branches                 @relation(fields: [branch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  stores                 stores?                  @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
-  suppliers              suppliers                @relation(fields: [supplier_id], references: [supplier_id], onUpdate: NoAction)
-  purchase_returns       purchase_returns[]
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id        String              @default(dbgenerated("auth.uid()")) @db.Uuid
+  branch_id           String              @db.Uuid
+  store_id            String?             @db.Uuid
+  invoice_no          String              @db.VarChar(100)
+  supplier_invoice_no String?             @db.VarChar(100)
+  invoice_date        DateTime            @default(now()) @db.Timestamptz(6)
+  due_date            DateTime?           @db.Timestamptz(6)
+  status              invoice_status_enum @default(draft)
+  subtotal            Decimal             @default(0) @db.Decimal(18, 4)
+  discount_type       discount_type_enum?
+  discount_value      Decimal             @default(0) @db.Decimal(18, 4)
+  discount_amount     Decimal             @default(0) @db.Decimal(18, 4)
+  tax_amount          Decimal             @default(0) @db.Decimal(18, 4)
+  rounding_amount     Decimal             @default(0) @db.Decimal(18, 4)
+  total_amount        Decimal             @default(0) @db.Decimal(18, 4)
+  paid_amount         Decimal             @default(0) @db.Decimal(18, 4)
+  due_amount          Decimal             @default(0) @db.Decimal(18, 4)
+  notes               String?
+  created_by          String?
+  updated_by          String?
+  posted_at           DateTime?           @db.Timestamptz(6)
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @default(now()) @db.Timestamptz(6)
+  tenant_id           String?             @db.Uuid
+  supplier_id         String              @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model purchase_return_items {
-  id                       String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  purchase_return_id       String                  @db.Uuid
-  purchase_invoice_item_id String?                 @db.Uuid
-  product_variant_id       String                  @db.Uuid
-  quantity                 Decimal                 @db.Decimal(18, 4)
-  unit_cost                Decimal                 @default(0) @db.Decimal(18, 4)
-  tax_amount               Decimal                 @default(0) @db.Decimal(18, 4)
-  line_total               Decimal                 @default(0) @db.Decimal(18, 4)
+  id                       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchase_return_id       String  @db.Uuid
+  purchase_invoice_item_id String? @db.Uuid
+  product_variant_id       String  @db.Uuid
+  quantity                 Decimal @db.Decimal(18, 4)
+  unit_cost                Decimal @default(0) @db.Decimal(18, 4)
+  tax_amount               Decimal @default(0) @db.Decimal(18, 4)
+  line_total               Decimal @default(0) @db.Decimal(18, 4)
   reason                   String?
-  auth_user_id             String?                 @default(dbgenerated("auth.uid()")) @db.Uuid
-  product_variants         product_variants        @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction)
-  purchase_invoice_items   purchase_invoice_items? @relation(fields: [purchase_invoice_item_id], references: [id], onUpdate: NoAction)
-  purchase_returns         purchase_returns        @relation(fields: [purchase_return_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  auth_user_id             String? @default(dbgenerated("auth.uid()")) @db.Uuid
+  batch_id                 String? @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model purchase_returns {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  purchase_invoice_id   String?                 @db.Uuid
-  auth_user_id          String                  @default(dbgenerated("auth.uid()")) @db.Uuid
-  branch_id             String                  @db.Uuid
-  store_id              String?                 @db.Uuid
-  supplier_id           Int?
-  return_no             String                  @db.VarChar(100)
-  return_date           DateTime                @default(now()) @db.Timestamptz(6)
-  status                return_status_enum      @default(draft)
-  subtotal              Decimal                 @default(0) @db.Decimal(18, 4)
-  tax_amount            Decimal                 @default(0) @db.Decimal(18, 4)
-  total_amount          Decimal                 @default(0) @db.Decimal(18, 4)
-  reason                String?
-  notes                 String?
-  created_by            String?
-  created_at            DateTime                @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime                @default(now()) @db.Timestamptz(6)
-  purchase_return_items purchase_return_items[]
-  branches              branches                @relation(fields: [branch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  purchase_invoices     purchase_invoices?      @relation(fields: [purchase_invoice_id], references: [id], onUpdate: NoAction)
-  stores                stores?                 @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
-  suppliers             suppliers?              @relation(fields: [supplier_id], references: [supplier_id], onUpdate: NoAction)
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchase_invoice_id String?            @db.Uuid
+  auth_user_id        String             @default(dbgenerated("auth.uid()")) @db.Uuid
+  branch_id           String             @db.Uuid
+  store_id            String?            @db.Uuid
+  return_no           String             @db.VarChar(100)
+  return_date         DateTime           @default(now()) @db.Timestamptz(6)
+  status              return_status_enum @default(draft)
+  subtotal            Decimal            @default(0) @db.Decimal(18, 4)
+  tax_amount          Decimal            @default(0) @db.Decimal(18, 4)
+  total_amount        Decimal            @default(0) @db.Decimal(18, 4)
+  reason              String?
+  notes               String?
+  created_by          String?
+  created_at          DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime           @default(now()) @db.Timestamptz(6)
+  supplier_id         String?            @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -761,89 +631,81 @@ model res_events {
   created_by     String?   @db.Uuid
   created_at     DateTime? @default(now()) @db.Timestamptz(6)
   auth_user_id   String?   @default(dbgenerated("auth.uid()")) @db.Uuid
-
-  @@index([event_date], map: "idx_res_events_date")
+  tenant_id      String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_floors {
-  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String       @db.VarChar(100)
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String    @db.VarChar(100)
   description  String?
-  sort_order   Int?         @default(0)
-  is_active    Boolean?     @default(true)
-  created_at   DateTime?    @default(now()) @db.Timestamptz(6)
-  auth_user_id String?      @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_tables   res_tables[]
+  sort_order   Int?      @default(0)
+  is_active    Boolean?  @default(true)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id    String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_item_properties {
-  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  item_id        String?         @db.Uuid
-  name           String          @db.VarChar(100)
-  options        Json?           @default("[]")
-  is_required    Boolean?        @default(false)
-  max_selections Int?            @default(1)
-  created_at     DateTime?       @default(now()) @db.Timestamptz(6)
-  price          Decimal?        @db.Decimal
-  auth_user_id   String?         @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_menu_items res_menu_items? @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  item_id        String?   @db.Uuid
+  name           String    @db.VarChar(100)
+  options        Json?     @default("[]")
+  is_required    Boolean?  @default(false)
+  max_selections Int?      @default(1)
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+  price          Decimal?  @db.Decimal
+  auth_user_id   String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id      String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_item_variants {
-  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  item_id          String?           @db.Uuid
-  name             String            @db.VarChar(100)
-  price_adjustment Decimal?          @default(0) @db.Decimal(10, 2)
-  is_default       Boolean?          @default(false)
-  created_at       DateTime?         @default(now()) @db.Timestamptz(6)
-  auth_user_id     String?           @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_menu_items   res_menu_items?   @relation(fields: [item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  res_order_items  res_order_items[]
-
-  @@index([item_id], map: "idx_res_item_variants_item")
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  item_id          String?   @db.Uuid
+  name             String    @db.VarChar(100)
+  price_adjustment Decimal?  @default(0) @db.Decimal(10, 2)
+  is_default       Boolean?  @default(false)
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id     String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id        String?   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_menu_categories {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                  String                  @db.VarChar(100)
-  name_ar               String?                 @db.VarChar(100)
-  icon                  String?                 @db.VarChar(50)
-  sort_order            Int?                    @default(0)
-  is_active             Boolean?                @default(true)
-  created_at            DateTime?               @default(now()) @db.Timestamptz(6)
-  auth_user_id          String?                 @default(dbgenerated("auth.uid()")) @db.Uuid
-  promotion_menu_scopes promotion_menu_scopes[]
-  res_menu_items        res_menu_items[]
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String           @db.VarChar(100)
+  name_ar        String?          @db.VarChar(100)
+  icon           String?          @db.VarChar(50)
+  sort_order     Int?             @default(0)
+  is_active      Boolean?         @default(true)
+  created_at     DateTime?        @default(now()) @db.Timestamptz(6)
+  auth_user_id   String?          @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id      String?          @db.Uuid
+  res_menu_items res_menu_items[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_menu_items {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  category_id           String?                 @db.Uuid
-  name                  String                  @db.VarChar(200)
-  name_ar               String?                 @db.VarChar(200)
-  description           String?
-  description_ar        String?
-  base_price            Decimal                 @db.Decimal(10, 2)
-  image_url             String?
-  is_available          Boolean?                @default(true)
-  preparation_time      Int?                    @default(15)
-  allergens             Json?                   @default("[]")
-  tags                  Json?                   @default("[]")
-  created_at            DateTime?               @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime?               @default(now()) @db.Timestamptz(6)
-  auth_user_id          String?                 @default(dbgenerated("auth.uid()")) @db.Uuid
-  promotion_menu_scopes promotion_menu_scopes[]
-  res_item_properties   res_item_properties[]
-  res_item_variants     res_item_variants[]
-  res_menu_categories   res_menu_categories?    @relation(fields: [category_id], references: [id], onUpdate: NoAction)
-  res_order_items       res_order_items[]
-
-  @@index([category_id], map: "idx_res_menu_items_category")
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  category_id         String?              @db.Uuid
+  name                String               @db.VarChar(200)
+  name_ar             String?              @db.VarChar(200)
+  description         String?
+  description_ar      String?
+  base_price          Decimal              @db.Decimal(10, 2)
+  image_url           String?
+  is_available        Boolean?             @default(true)
+  preparation_time    Int?                 @default(15)
+  allergens           Json?                @default("[]")
+  tags                Json?                @default("[]")
+  created_at          DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?            @default(now()) @db.Timestamptz(6)
+  auth_user_id        String?              @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id           String?              @db.Uuid
+  res_menu_categories res_menu_categories? @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "fk_res_menu_items_categories")
+  res_order_items     res_order_items[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -857,46 +719,40 @@ model res_notifications {
   is_read      Boolean?  @default(false)
   created_at   DateTime? @default(now()) @db.Timestamptz(6)
   auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
-
-  @@index([recipient_id], map: "idx_res_notifications_recipient")
-  @@index([recipient_id, is_read], map: "idx_res_notifications_unread", where: raw("(is_read = false)"))
+  tenant_id    String?   @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_order_items {
-  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_id          String?            @db.Uuid
-  item_id           String?            @db.Uuid
-  variant_id        String?            @db.Uuid
-  quantity          Int?               @default(1)
-  unit_price        Decimal            @db.Decimal(10, 2)
-  properties        Json?              @default("[]")
-  notes             String?
-  status            String?            @default("pending") @db.VarChar(20)
-  created_at        DateTime?          @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime?          @default(now()) @db.Timestamptz(6)
-  auth_user_id      String?            @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_menu_items    res_menu_items?    @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  res_orders        res_orders?        @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  res_item_variants res_item_variants? @relation(fields: [variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([order_id], map: "idx_res_order_items_order")
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id       String?            @db.Uuid
+  item_id        String?            @db.Uuid
+  variant_id     String?            @db.Uuid
+  quantity       Int?               @default(1)
+  unit_price     Decimal            @db.Decimal(10, 2)
+  properties     Json?              @default("[]")
+  notes          String?
+  created_at     DateTime?          @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?          @default(now()) @db.Timestamptz(6)
+  auth_user_id   String?            @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id      String?            @db.Uuid
+  status         order_item_status? @default(pending)
+  res_menu_items res_menu_items?    @relation(fields: [item_id], references: [id], onDelete: Restrict, onUpdate: NoAction, map: "fk_res_order_items_menu_items")
+  res_orders     res_orders?        @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_res_order_items_orders")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_orders {
   id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_number          String              @unique @db.VarChar(20)
+  order_number          String              @db.VarChar(20)
   table_id              String?             @db.Uuid
   shift_id              String?             @db.Uuid
   created_by            String?             @db.Uuid
   customer_name         String?             @db.VarChar(200)
-  status                String?             @default("open") @db.VarChar(30)
   subtotal              Decimal?            @default(0) @db.Decimal(10, 2)
   discount_amount       Decimal?            @default(0) @db.Decimal(10, 2)
-  discount_type         String?             @db.VarChar(20)
   tax_amount            Decimal?            @default(0) @db.Decimal(10, 2)
   tip_amount            Decimal?            @default(0) @db.Decimal(10, 2)
   total_amount          Decimal?            @default(0) @db.Decimal(10, 2)
@@ -906,162 +762,118 @@ model res_orders {
   created_at            DateTime?           @default(now()) @db.Timestamptz(6)
   updated_at            DateTime?           @default(now()) @db.Timestamptz(6)
   mobile_number         String?
-  promotion_id          String?             @db.Uuid
   promo_discount_amount Decimal?            @default(0) @db.Decimal(10, 2)
   received_amount       Decimal?            @default(0) @db.Decimal(10, 2)
   change_amount         Decimal?            @default(0) @db.Decimal(10, 2)
   auth_user_id          String?             @default(dbgenerated("auth.uid()")) @db.Uuid
   shipment_id           String?             @db.Uuid
-  applied_promotion_id  Int?
   order_type            String?             @db.VarChar(20)
-  promotion_usage       promotion_usage?
+  tenant_id             String?             @db.Uuid
+  status                order_status?       @default(open)
+  discount_type         discount_type_enum?
+  applied_promotion_id  String?             @db.Uuid
   res_order_items       res_order_items[]
-  promotions            promotions?         @relation(fields: [applied_promotion_id], references: [promotion_id], onUpdate: NoAction)
-  res_promotions        res_promotions?     @relation(fields: [promotion_id], references: [id], onUpdate: NoAction)
-  res_shifts            res_shifts?         @relation(fields: [shift_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  res_tables            res_tables?         @relation(fields: [table_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  res_shipments         res_shipments?
-  res_void_requests     res_void_requests[]
-
-  @@index([shift_id], map: "idx_res_orders_shift")
-  @@index([status], map: "idx_res_orders_status")
-  @@index([table_id], map: "idx_res_orders_table")
-  @@index([applied_promotion_id], map: "idx_res_orders_applied_promotion")
+  res_tables            res_tables?         @relation(fields: [table_id], references: [id], onUpdate: NoAction, map: "fk_res_orders_res_tables")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_payment_methods {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @db.VarChar(100)
-  icon       String?   @db.VarChar(50)
-  is_enabled Boolean?  @default(true)
-  sort_order Int?      @default(0)
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  is_default Boolean   @default(false)
-  updated_at DateTime? @default(now()) @db.Timestamptz(6)
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model res_promotion_usage {
-  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  promotion_id   String         @db.Uuid
-  order_id       String         @db.Uuid
-  applied_at     DateTime?      @default(now()) @db.Timestamptz(6)
-  auth_user_id   String?        @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_promotions res_promotions @relation(fields: [promotion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model res_promotions {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                String                @unique
-  description         String?
-  discount_type       String                @default("percent")
-  discount_value      Decimal               @db.Decimal(10, 2)
-  min_purchase        Decimal?              @default(0) @db.Decimal(10, 2)
-  max_usage           Int?
-  usage_count         Int?                  @default(0)
-  is_active           Boolean?              @default(true)
-  starts_at           DateTime?             @db.Timestamptz(6)
-  expires_at          DateTime?             @db.Timestamptz(6)
-  created_at          DateTime?             @default(now()) @db.Timestamptz(6)
-  auth_user_id        String?               @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_orders          res_orders[]
-  res_promotion_usage res_promotion_usage[]
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String    @db.VarChar(100)
+  icon         String?   @db.VarChar(50)
+  is_enabled   Boolean?  @default(true)
+  sort_order   Int?      @default(0)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  is_default   Boolean   @default(false)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id    String?   @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_reservations {
-  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  table_id         String?     @db.Uuid
-  customer_name    String      @db.VarChar(200)
-  customer_phone   String?     @db.VarChar(20)
-  customer_email   String?     @db.VarChar(255)
-  party_size       Int?        @default(2)
-  reservation_date DateTime    @db.Date
-  reservation_time DateTime    @db.Time(6)
-  duration_minutes Int?        @default(90)
-  status           String?     @default("confirmed") @db.VarChar(20)
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  table_id         String?             @db.Uuid
+  customer_name    String              @db.VarChar(200)
+  customer_phone   String?             @db.VarChar(20)
+  customer_email   String?             @db.VarChar(255)
+  party_size       Int?                @default(2)
+  reservation_date DateTime            @db.Date
+  reservation_time DateTime            @db.Time(6)
+  duration_minutes Int?                @default(90)
   notes            String?
-  created_by       String?     @db.Uuid
-  created_at       DateTime?   @default(now()) @db.Timestamptz(6)
-  auth_user_id     String?     @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_tables       res_tables? @relation(fields: [table_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([reservation_date], map: "idx_res_reservations_date")
-  @@index([table_id], map: "idx_res_reservations_table")
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model res_roles {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String    @unique @db.VarChar(50)
-  display_name String    @db.VarChar(100)
-  permissions  Json?     @default("[]")
-  created_at   DateTime? @default(now()) @db.Timestamptz(6)
-  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  created_by       String?             @db.Uuid
+  created_at       DateTime?           @default(now()) @db.Timestamptz(6)
+  auth_user_id     String?             @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id        String?             @db.Uuid
+  status           reservation_status? @default(confirmed)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_shifts {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id  String?      @default(dbgenerated("auth.uid()")) @db.Uuid
-  closed_by     String?
-  opening_cash  Decimal?     @default(0) @db.Decimal(10, 2)
-  closing_cash  Decimal?     @db.Decimal(10, 2)
-  status        String?      @default("open") @db.VarChar(20)
-  opened_at     DateTime?    @default(now()) @db.Timestamptz(6)
-  closed_at     DateTime?    @db.Timestamptz(6)
-  notes         String?
-  opened_by     String?      @db.VarChar(255)
-  restaurant_id String?      @db.VarChar(255)
-  res_orders    res_orders[]
-
-  @@index([restaurant_id], map: "idx_res_shifts_restaurant_id")
-  @@index([status], map: "idx_res_shifts_status")
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id          String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+  closed_by             String?
+  opening_cash          Decimal?  @default(0) @db.Decimal(10, 2)
+  closing_cash          Decimal?  @db.Decimal(10, 2)
+  status                String?   @default("open") @db.VarChar(20)
+  opened_at             DateTime? @default(now()) @db.Timestamptz(6)
+  closed_at             DateTime? @db.Timestamptz(6)
+  notes                 String?
+  opened_by             String?   @db.VarChar(255)
+  restaurant_id         String?   @db.VarChar(255)
+  branch_id             String?   @db.Uuid
+  expected_cash         Decimal?  @db.Decimal(12, 2)
+  variance              Decimal?  @db.Decimal(12, 2)
+  cash_sales_total      Decimal?  @db.Decimal(12, 2)
+  movements_in_total    Decimal?  @db.Decimal(12, 2)
+  movements_out_total   Decimal?  @db.Decimal(12, 2)
+  original_closing_cash Decimal?  @db.Decimal(12, 2)
+  original_variance     Decimal?  @db.Decimal(12, 2)
+  variance_comment      String?
+  close_reason          String?
+  closed_by_user_id     String?   @db.Uuid
+  needs_review          Boolean   @default(false)
+  reviewed_by           String?   @db.Uuid
+  reviewed_at           DateTime? @db.Timestamptz(6)
+  is_corrected          Boolean   @default(false)
+  stale_notified_at     DateTime? @db.Timestamptz(6)
+  tenant_id             String?   @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_tables {
-  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  floor_id         String?            @db.Uuid
-  table_number     String             @db.VarChar(20)
-  seats            Int?               @default(4)
-  status           String?            @default("free") @db.VarChar(20)
-  position_x       Int?               @default(0)
-  position_y       Int?               @default(0)
-  shape            String?            @default("square") @db.VarChar(20)
-  is_active        Boolean?           @default(true)
-  created_at       DateTime?          @default(now()) @db.Timestamptz(6)
-  auth_user_id     String?            @default(dbgenerated("auth.uid()")) @db.Uuid
-  res_orders       res_orders[]
-  res_reservations res_reservations[]
-  res_floors       res_floors?        @relation(fields: [floor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([floor_id], map: "idx_res_tables_floor_id")
-  @@index([status], map: "idx_res_tables_status")
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  floor_id     String?       @db.Uuid
+  table_number String        @db.VarChar(20)
+  seats        Int?          @default(4)
+  position_x   Int?          @default(0)
+  position_y   Int?          @default(0)
+  shape        String?       @default("square") @db.VarChar(20)
+  is_active    Boolean?      @default(true)
+  created_at   DateTime?     @default(now()) @db.Timestamptz(6)
+  auth_user_id String?       @default(dbgenerated("auth.uid()")) @db.Uuid
+  tenant_id    String?       @db.Uuid
+  status       table_status? @default(free)
+  res_orders   res_orders[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_void_requests {
-  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_id         String?     @db.Uuid
-  requested_by     String?     @db.Uuid
-  approved_by      String?     @db.Uuid
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id         String?              @db.Uuid
+  requested_by     String?              @db.Uuid
+  approved_by      String?              @db.Uuid
   reason           String
-  status           String?     @default("pending") @db.VarChar(20)
   rejection_reason String?
-  created_at       DateTime?   @default(now()) @db.Timestamptz(6)
-  processed_at     DateTime?   @db.Timestamptz(6)
-  res_orders       res_orders? @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([order_id], map: "idx_res_void_requests_order")
-  @@index([status], map: "idx_res_void_requests_status")
+  created_at       DateTime?            @default(now()) @db.Timestamptz(6)
+  processed_at     DateTime?            @db.Timestamptz(6)
+  tenant_id        String?              @db.Uuid
+  status           void_request_status? @default(pending)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1083,7 +895,6 @@ model roles {
   updated_at       DateTime?          @default(now()) @db.Timestamptz(6)
   is_active        Boolean            @default(true)
   is_system        Boolean            @default(false)
-  employee_roles   employee_roles[]
   role_permissions role_permissions[]
   screen_roles     screen_roles[]
   user_roles       user_roles[]
@@ -1092,256 +903,213 @@ model roles {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model sales_invoice_items {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  invoice_id          String                @db.Uuid
-  product_variant_id  String                @db.Uuid
-  tax_rate_id         Int?
-  line_no             Int                   @default(1)
-  description         String?               @db.VarChar(255)
-  quantity            Decimal               @db.Decimal(18, 4)
-  unit_price          Decimal               @db.Decimal(18, 4)
-  discount_type       discount_type_enum?
-  discount_value      Decimal               @default(0) @db.Decimal(18, 4)
-  discount_amount     Decimal               @default(0) @db.Decimal(18, 4)
-  tax_amount          Decimal               @default(0) @db.Decimal(18, 4)
-  line_subtotal       Decimal               @default(0) @db.Decimal(18, 4)
-  line_total          Decimal               @default(0) @db.Decimal(18, 4)
-  unit_cost           Decimal               @default(0) @db.Decimal(18, 4)
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  returned_quantity   Decimal               @default(0) @db.Decimal(18, 4)
-  auth_user_id        String?               @default(dbgenerated("auth.uid()")) @db.Uuid
-  sales_invoices      sales_invoices        @relation(fields: [invoice_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  product_variants    product_variants      @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction)
-  tax_rates           tax_rates?            @relation(fields: [tax_rate_id], references: [tax_rate_id], onUpdate: NoAction)
-  sales_return_items  sales_return_items[]
-  transaction_details transaction_details[]
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoice_id         String              @db.Uuid
+  product_variant_id String              @db.Uuid
+  line_no            Int                 @default(1)
+  description        String?             @db.VarChar(255)
+  quantity           Decimal             @db.Decimal(18, 4)
+  unit_price         Decimal             @db.Decimal(18, 4)
+  discount_type      discount_type_enum?
+  discount_value     Decimal             @default(0) @db.Decimal(18, 4)
+  discount_amount    Decimal             @default(0) @db.Decimal(18, 4)
+  tax_amount         Decimal             @default(0) @db.Decimal(18, 4)
+  line_subtotal      Decimal             @default(0) @db.Decimal(18, 4)
+  line_total         Decimal             @default(0) @db.Decimal(18, 4)
+  unit_cost          Decimal             @default(0) @db.Decimal(18, 4)
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  returned_quantity  Decimal             @default(0) @db.Decimal(18, 4)
+  auth_user_id       String?             @default(dbgenerated("auth.uid()")) @db.Uuid
+  batch_id           String?             @db.Uuid
+  tax_rate_id        String?             @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model sales_invoices {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id        String                @default(dbgenerated("auth.uid()")) @db.Uuid
-  branch_id           String                @db.Uuid
-  store_id            String?               @db.Uuid
-  customer_id         Int?
-  pos_terminal_id     String?               @db.Uuid
-  price_list_id       Int?
-  invoice_no          String                @db.VarChar(100)
-  external_reference  String?               @db.VarChar(100)
-  invoice_date        DateTime              @default(now()) @db.Timestamptz(6)
-  due_date            DateTime?             @db.Timestamptz(6)
-  status              invoice_status_enum   @default(draft)
-  subtotal            Decimal               @default(0) @db.Decimal(18, 4)
-  discount_type       discount_type_enum?
-  discount_value      Decimal               @default(0) @db.Decimal(18, 4)
-  discount_amount     Decimal               @default(0) @db.Decimal(18, 4)
-  tax_amount          Decimal               @default(0) @db.Decimal(18, 4)
-  rounding_amount     Decimal               @default(0) @db.Decimal(18, 4)
-  total_amount        Decimal               @default(0) @db.Decimal(18, 4)
-  paid_amount         Decimal               @default(0) @db.Decimal(18, 4)
-  due_amount          Decimal               @default(0) @db.Decimal(18, 4)
-  notes               String?
-  created_by          String?
-  updated_by          String?
-  posted_at           DateTime?             @db.Timestamptz(6)
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime              @default(now()) @db.Timestamptz(6)
-  refunds             refunds[]
-  sales_invoice_items sales_invoice_items[]
-  branches            branches              @relation(fields: [branch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  customers           customers?            @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
-  pos_terminals       pos_terminals?        @relation(fields: [pos_terminal_id], references: [id], onUpdate: NoAction)
-  price_list          price_list?           @relation(fields: [price_list_id], references: [price_id], onUpdate: NoAction)
-  stores              stores?               @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
-  sales_returns       sales_returns[]
-  transactions        transactions[]
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id       String              @default(dbgenerated("auth.uid()")) @db.Uuid
+  branch_id          String              @db.Uuid
+  store_id           String?             @db.Uuid
+  pos_terminal_id    String?             @db.Uuid
+  invoice_no         String              @db.VarChar(100)
+  external_reference String?             @db.VarChar(100)
+  invoice_date       DateTime            @default(now()) @db.Timestamptz(6)
+  due_date           DateTime?           @db.Timestamptz(6)
+  status             invoice_status_enum @default(draft)
+  subtotal           Decimal             @default(0) @db.Decimal(18, 4)
+  discount_type      discount_type_enum?
+  discount_value     Decimal             @default(0) @db.Decimal(18, 4)
+  discount_amount    Decimal             @default(0) @db.Decimal(18, 4)
+  tax_amount         Decimal             @default(0) @db.Decimal(18, 4)
+  rounding_amount    Decimal             @default(0) @db.Decimal(18, 4)
+  total_amount       Decimal             @default(0) @db.Decimal(18, 4)
+  paid_amount        Decimal             @default(0) @db.Decimal(18, 4)
+  due_amount         Decimal             @default(0) @db.Decimal(18, 4)
+  notes              String?
+  created_by         String?
+  updated_by         String?
+  posted_at          DateTime?           @db.Timestamptz(6)
+  created_at         DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime            @default(now()) @db.Timestamptz(6)
+  channel            String?             @default("counter") @db.VarChar(20)
+  tenant_id          String?             @db.Uuid
+  customer_id        String?             @db.Uuid
+  price_list_id      String?             @db.Uuid
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model sales_return_items {
-  id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sales_return_id       String                @db.Uuid
-  sales_invoice_item_id String?               @db.Uuid
-  product_variant_id    String                @db.Uuid
-  quantity              Decimal               @db.Decimal(18, 4)
-  unit_price            Decimal               @default(0) @db.Decimal(18, 4)
-  tax_amount            Decimal               @default(0) @db.Decimal(18, 4)
-  line_total            Decimal               @default(0) @db.Decimal(18, 4)
+  id                    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sales_return_id       String  @db.Uuid
+  sales_invoice_item_id String? @db.Uuid
+  product_variant_id    String  @db.Uuid
+  quantity              Decimal @db.Decimal(18, 4)
+  unit_price            Decimal @default(0) @db.Decimal(18, 4)
+  tax_amount            Decimal @default(0) @db.Decimal(18, 4)
+  line_total            Decimal @default(0) @db.Decimal(18, 4)
   reason                String?
-  auth_user_id          String?               @default(dbgenerated("auth.uid()")) @db.Uuid
-  product_variants      product_variants      @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction)
-  sales_invoice_items   sales_invoice_items?  @relation(fields: [sales_invoice_item_id], references: [id], onUpdate: NoAction)
-  sales_returns         sales_returns         @relation(fields: [sales_return_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  transaction_details   transaction_details[]
+  auth_user_id          String? @default(dbgenerated("auth.uid()")) @db.Uuid
+  batch_id              String? @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model sales_returns {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id       String               @default(dbgenerated("auth.uid()")) @db.Uuid
-  sales_invoice_id   String?              @db.Uuid
-  branch_id          String               @db.Uuid
-  store_id           String?              @db.Uuid
-  customer_id        Int?
-  return_no          String               @db.VarChar(100)
-  return_date        DateTime             @default(now()) @db.Timestamptz(6)
-  status             return_status_enum   @default(draft)
-  subtotal           Decimal              @default(0) @db.Decimal(18, 4)
-  tax_amount         Decimal              @default(0) @db.Decimal(18, 4)
-  total_amount       Decimal              @default(0) @db.Decimal(18, 4)
-  reason             String?
-  notes              String?
-  created_by         String?
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime             @default(now()) @db.Timestamptz(6)
-  sales_return_items sales_return_items[]
-  branches           branches             @relation(fields: [branch_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  customers          customers?           @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
-  sales_invoices     sales_invoices?      @relation(fields: [sales_invoice_id], references: [id], onUpdate: NoAction)
-  stores             stores?              @relation(fields: [store_id], references: [store_id], onUpdate: NoAction)
-  transactions       transactions[]
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id     String             @default(dbgenerated("auth.uid()")) @db.Uuid
+  sales_invoice_id String?            @db.Uuid
+  branch_id        String             @db.Uuid
+  store_id         String?            @db.Uuid
+  return_no        String             @db.VarChar(100)
+  return_date      DateTime           @default(now()) @db.Timestamptz(6)
+  status           return_status_enum @default(draft)
+  subtotal         Decimal            @default(0) @db.Decimal(18, 4)
+  tax_amount       Decimal            @default(0) @db.Decimal(18, 4)
+  total_amount     Decimal            @default(0) @db.Decimal(18, 4)
+  reason           String?
+  notes            String?
+  created_by       String?
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @default(now()) @db.Timestamptz(6)
+  customer_id      String?            @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model stock_balances {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id          String           @db.Uuid
-  store_id           String           @db.Uuid
-  product_variant_id String           @db.Uuid
-  qty_on_hand        Decimal          @default(0) @db.Decimal(18, 4)
-  qty_reserved       Decimal          @default(0) @db.Decimal(18, 4)
-  qty_available      Decimal?         @db.Decimal(18, 4)
-  avg_cost           Decimal          @default(0) @db.Decimal(18, 4)
-  last_movement_at   DateTime?        @db.Timestamptz(6)
-  created_at         DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime         @default(now()) @db.Timestamptz(6)
-  auth_user_id       String?          @default(dbgenerated("auth.uid()")) @db.Uuid
-  product_variants   product_variants @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  stores             stores           @relation(fields: [store_id], references: [store_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([store_id, product_variant_id])
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String    @db.Uuid
+  store_id           String    @db.Uuid
+  product_variant_id String    @db.Uuid
+  qty_on_hand        Decimal   @default(0) @db.Decimal(18, 4)
+  qty_reserved       Decimal   @default(0) @db.Decimal(18, 4)
+  qty_available      Decimal?  @db.Decimal(18, 4)
+  avg_cost           Decimal   @default(0) @db.Decimal(18, 4)
+  last_movement_at   DateTime? @db.Timestamptz(6)
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @default(now()) @db.Timestamptz(6)
+  auth_user_id       String?   @default(dbgenerated("auth.uid()")) @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model stores {
-  auth_user_id                                          String?               @default(dbgenerated("auth.uid()")) @db.Uuid
-  phone                                                 String?
-  email                                                 String?
-  address                                               String?
-  latitude                                              Decimal?              @db.Decimal
-  longitude                                             Decimal?              @db.Decimal
-  created_at                                            DateTime?             @db.Timestamp(6)
-  updated_at                                            DateTime?             @db.Timestamp(6)
-  city_id                                               String?               @db.Uuid
-  country_id                                            String?               @db.Uuid
-  name                                                  String?
-  store_id                                              String                @id @db.Uuid
-  status                                                Boolean?              @default(true)
-  branch_id                                             String?               @db.Uuid
-  inventory                                             inventory[]
-  inventory_movements                                   inventory_movements[]
-  pos_terminals                                         pos_terminals[]
-  price_list                                            price_list[]
-  purchase_invoices                                     purchase_invoices[]
-  purchase_returns                                      purchase_returns[]
-  refunds                                               refunds[]
-  sales_invoices                                        sales_invoices[]
-  sales_returns                                         sales_returns[]
-  stock_adjustments                                     stock_adjustments[]
-  stock_balances                                        stock_balances[]
-  stock_transfers_stock_transfers_from_store_idTostores stock_transfers[]     @relation("stock_transfers_from_store_idTostores")
-  stock_transfers_stock_transfers_to_store_idTostores   stock_transfers[]     @relation("stock_transfers_to_store_idTostores")
-  branches                                              branches?             @relation(fields: [branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  cities                                                cities?               @relation(fields: [city_id], references: [id], onUpdate: NoAction)
-  countries                                             countries?            @relation(fields: [country_id], references: [id], onUpdate: NoAction)
+  auth_user_id String?      @default(dbgenerated("auth.uid()")) @db.Uuid
+  phone        String?
+  email        String?
+  address      String?
+  latitude     Decimal?     @db.Decimal
+  longitude    Decimal?     @db.Decimal
+  created_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  city_id      String?      @db.Uuid
+  country_id   String?      @db.Uuid
+  name         String?
+  store_id     String       @id @db.Uuid
+  status       Boolean?     @default(true)
+  branch_id    String?      @db.Uuid
+  tenant_id    String?      @db.Uuid
+  branches     branches?    @relation(fields: [branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cities       cities?      @relation(fields: [city_id], references: [id], onUpdate: NoAction)
+  countries    countries?   @relation(fields: [country_id], references: [id], onUpdate: NoAction)
+  warehouses   warehouses[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model subscriptions {
-  id                   Int                    @id @default(autoincrement())
   name                 String                 @db.VarChar(100)
   duration_months      Int
   price                Decimal                @db.Decimal(10, 2)
-  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  created_at           DateTime?              @default(now()) @db.Timestamptz(6)
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenant_subscriptions tenant_subscriptions[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tenant_subscriptions {
-  id                    String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id          String                       @db.Uuid
-  email                 String                       @db.VarChar(255)
-  subscription_id       Int
-  status                subscription_status          @default(new)
-  first_use             Boolean                      @default(true)
-  start_date            DateTime?                    @db.Timestamp(6)
-  end_date              DateTime?                    @db.Timestamp(6)
-  created_at            DateTime?                    @default(now()) @db.Timestamp(6)
-  updated_at            DateTime?                    @default(now()) @db.Timestamp(6)
-  commission_amount     Decimal?                     @default(0) @db.Decimal(10, 2)
-  commission_type       subscription_commission_type @default(subscription)
-  first_name            String?
-  last_name             String?
-  is_owner              Boolean?
-  tenant_activity_types tenant_activity_types[]
-  subscriptions         subscriptions                @relation(fields: [subscription_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant_users          tenant_users[]
-
-  @@index([status], map: "idx_tenant_subscriptions_status")
+  id                String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id      String                       @db.Uuid
+  email             String                       @db.VarChar(255)
+  status            subscription_status          @default(new)
+  first_use         Boolean                      @default(true)
+  start_date        DateTime?                    @db.Timestamptz(6)
+  end_date          DateTime?                    @db.Timestamptz(6)
+  created_at        DateTime?                    @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?                    @default(now()) @db.Timestamptz(6)
+  commission_amount Decimal?                     @default(0) @db.Decimal(10, 2)
+  commission_type   subscription_commission_type @default(subscription)
+  first_name        String?
+  last_name         String?
+  is_owner          Boolean?
+  tenant_id         String?                      @db.Uuid
+  subscription_id   String                       @db.Uuid
+  payment_method    String?                      @db.VarChar(50)
+  transfer_ref      String?                      @db.VarChar(100)
+  subscriptions     subscriptions                @relation(fields: [subscription_id], references: [id], onUpdate: NoAction, map: "fk_tenant_subscriptions_subscriptions")
+  tenants           tenants?                     @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tenant_users {
-  id                   String                @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  auth_user_id         String?               @db.Uuid
-  email                String?               @unique(map: "users_email_key") @db.VarChar(255)
-  phone                String?               @db.VarChar(20)
-  first_name           String?               @db.VarChar(100)
-  last_name            String?               @db.VarChar(100)
-  avatar_url           String?
-  primary_module       user_module?          @default(inventory)
-  modules              user_module[]         @default([inventory])
-  is_active            Boolean?              @default(true)
-  created_at           DateTime?             @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime?             @default(now()) @db.Timestamptz(6)
-  default_role         String?
-  onboarding_complete  Boolean               @default(false)
-  is_restuarant_user   Boolean?              @default(false)
-  parent_tenant_id     String?               @db.Uuid
-  refund_pin_code      Decimal?              @db.Decimal
-  tenant_subscriptions tenant_subscriptions? @relation(fields: [parent_tenant_id], references: [id], onUpdate: NoAction)
-  user_permissions     user_permissions[]
-  user_roles           user_roles[]
-
-  @@index([primary_module], map: "idx_users_primary_module")
+  id                  String             @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id        String?            @default(dbgenerated("auth.uid()")) @db.Uuid
+  email               String?            @db.VarChar(255)
+  phone               String?            @db.VarChar(20)
+  first_name          String?            @db.VarChar(100)
+  last_name           String?            @db.VarChar(100)
+  avatar_url          String?
+  primary_module      user_module?       @default(inventory)
+  modules             user_module[]      @default([inventory])
+  is_active           Boolean?           @default(true)
+  created_at          DateTime?          @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?          @default(now()) @db.Timestamptz(6)
+  default_role        String?
+  onboarding_complete Boolean            @default(false)
+  is_restuarant_user  Boolean?           @default(false)
+  parent_tenant_id    String?            @db.Uuid
+  refund_pin_code     String?            @db.VarChar(255)
+  id_number           String?
+  tenant_id           String?            @db.Uuid
+  branch_id           String?            @db.Uuid
+  branches            branches?          @relation(fields: [branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants             tenants?           @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_permissions    user_permissions[]
+  user_roles          user_roles[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model transaction_details {
-  id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id             String               @db.Uuid
-  transaction_id        String               @db.Uuid
-  product_id            Int
-  quantity              Decimal              @db.Decimal(10, 2)
-  unit_price            Decimal              @db.Decimal(10, 2)
-  discount_amount       Decimal?             @default(0) @db.Decimal(10, 2)
-  tax_amount            Decimal?             @default(0) @db.Decimal(10, 2)
-  subtotal              Decimal              @db.Decimal(10, 2)
-  sales_invoice_item_id String?              @db.Uuid
-  sales_return_item_id  String?              @db.Uuid
-  auth_user_id          String?              @default(dbgenerated("auth.uid()")) @db.Uuid
-  products              products             @relation(fields: [product_id], references: [product_id], onUpdate: NoAction)
-  sales_invoice_items   sales_invoice_items? @relation(fields: [sales_invoice_item_id], references: [id], onUpdate: NoAction)
-  sales_return_items    sales_return_items?  @relation(fields: [sales_return_item_id], references: [id], onUpdate: NoAction)
-  transactions          transactions         @relation(fields: [transaction_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([sales_invoice_item_id], map: "idx_td_invoice_item")
-  @@index([sales_return_item_id], map: "idx_td_return_item")
-  @@index([product_id], map: "idx_transaction_details_product")
-  @@index([tenant_id], map: "idx_transaction_details_tenant")
-  @@index([transaction_id], map: "idx_transaction_details_transaction")
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id             String   @db.Uuid
+  transaction_id        String   @db.Uuid
+  quantity              Decimal  @db.Decimal(10, 2)
+  unit_price            Decimal  @db.Decimal(10, 2)
+  discount_amount       Decimal? @default(0) @db.Decimal(10, 2)
+  tax_amount            Decimal? @default(0) @db.Decimal(10, 2)
+  subtotal              Decimal  @db.Decimal(10, 2)
+  sales_invoice_item_id String?  @db.Uuid
+  sales_return_item_id  String?  @db.Uuid
+  auth_user_id          String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+  product_id            String   @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1349,7 +1117,7 @@ model transactions {
   id                       String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenant_id                String?               @db.Uuid
   auth_user_id             String                @default(dbgenerated("auth.uid()")) @db.Uuid
-  transaction_number       String                @unique @db.VarChar(50)
+  transaction_number       String                @db.VarChar(50)
   transaction_type         transaction_type_enum
   status                   String                @default("pending") @db.VarChar(30)
   currency                 String                @default("USD") @db.VarChar(10)
@@ -1366,16 +1134,6 @@ model transactions {
   reference_transaction_id String?               @db.Uuid
   sales_invoice_id         String?               @db.Uuid
   sales_return_id          String?               @db.Uuid
-  transaction_details      transaction_details[]
-  transactions             transactions?         @relation("transactionsTotransactions", fields: [reference_transaction_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_transactions       transactions[]        @relation("transactionsTotransactions")
-  sales_invoices           sales_invoices?       @relation(fields: [sales_invoice_id], references: [id], onUpdate: NoAction)
-  sales_returns            sales_returns?        @relation(fields: [sales_return_id], references: [id], onUpdate: NoAction)
-
-  @@index([sales_invoice_id], map: "idx_transactions_invoice")
-  @@index([transaction_number], map: "idx_transactions_number")
-  @@index([sales_return_id], map: "idx_transactions_return")
-  @@index([tenant_id], map: "idx_transactions_tenant")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1396,17 +1154,14 @@ model app_settings {
   group        String?  @db.VarChar(50)
   is_public    Boolean  @default(true)
   auth_user_id String   @db.Uuid
-  created_at   DateTime @default(now()) @db.Timestamp(6)
-  updated_at   DateTime @default(now()) @db.Timestamp(6)
-
-  @@index([group])
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @db.Timestamptz(6)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model pos_reorder_requests {
   id                        String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   auth_user_id              String                 @default(dbgenerated("auth.uid()")) @db.Uuid
-  product_id                Int
   product_variant_id        String?                @db.Uuid
   requested_by_auth_user_id String                 @db.Uuid
   requested_by_name         String                 @db.VarChar(255)
@@ -1418,35 +1173,33 @@ model pos_reorder_requests {
   read_at                   DateTime?              @db.Timestamptz(6)
   created_at                DateTime               @default(now()) @db.Timestamptz(6)
   updated_at                DateTime               @default(now()) @db.Timestamptz(6)
-  products                  products               @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
-  product_variants          product_variants?      @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction)
-
-  @@index([product_id], map: "idx_pos_reorder_requests_product")
-  @@index([product_variant_id], map: "idx_pos_reorder_requests_variant")
+  requested_by_user_id      String?
+  read_by_user_id           String?
+  product_id                String                 @db.Uuid
+  products                  products               @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pos_reorder_requests_products")
+  product_variants          product_variants?      @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction, map: "fk_pos_reorder_requests_variants")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model res_shipments {
-  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  order_id         String     @unique @db.Uuid
-  auth_user_id     String     @default(dbgenerated("auth.uid()")) @db.Uuid
-  recipient_name   String     @db.VarChar(200)
-  recipient_phone  String     @db.VarChar(50)
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id         String               @db.Uuid
+  auth_user_id     String               @default(dbgenerated("auth.uid()")) @db.Uuid
+  recipient_name   String               @db.VarChar(200)
+  recipient_phone  String               @db.VarChar(50)
   delivery_address String
-  city             String?    @db.VarChar(100)
-  state            String?    @db.VarChar(100)
-  postal_code      String?    @db.VarChar(20)
-  status           String     @default("pending") @db.VarChar(30)
-  tracking_number  String?    @db.VarChar(100)
-  carrier          String?    @db.VarChar(100)
-  shipped_at       DateTime?  @db.Timestamptz(6)
-  delivered_at     DateTime?  @db.Timestamptz(6)
+  city             String?              @db.VarChar(100)
+  state            String?              @db.VarChar(100)
+  postal_code      String?              @db.VarChar(20)
+  tracking_number  String?              @db.VarChar(100)
+  carrier          String?              @db.VarChar(100)
+  shipped_at       DateTime?            @db.Timestamptz(6)
+  delivered_at     DateTime?            @db.Timestamptz(6)
   notes            String?
-  created_at       DateTime?  @default(now()) @db.Timestamptz(6)
-  updated_at       DateTime?  @default(now()) @db.Timestamptz(6)
-  res_orders       res_orders @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([order_id], map: "idx_res_shipments_order_id")
+  created_at       DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime?            @default(now()) @db.Timestamptz(6)
+  tenant_id        String?              @db.Uuid
+  status           shipment_status_enum @default(pending)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1481,8 +1234,6 @@ model app_screens {
   screen_buttons     screen_buttons[]
   screen_permissions screen_permissions[]
   screen_roles       screen_roles[]
-
-  @@index([module_id], map: "idx_app_screens_module")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1508,7 +1259,6 @@ model module_activity_types {
   app_modules             app_modules             @relation(fields: [module_id], references: [id], onDelete: Cascade)
 
   @@id([module_id, activity_type_id])
-  @@index([activity_type_id], map: "idx_module_activity_types_activity")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1527,20 +1277,13 @@ model permission_buttons {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model promotion_menu_scopes {
-  scope_id            Int                  @id @default(autoincrement())
-  promotion_id        Int
-  menu_item_id        String?              @db.Uuid
-  menu_category_id    String?              @db.Uuid
-  scope_role          String               @default("target") @db.VarChar(10)
-  created_at          DateTime?            @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime?            @default(now()) @db.Timestamptz(6)
-  res_menu_categories res_menu_categories? @relation(fields: [menu_category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  res_menu_items      res_menu_items?      @relation(fields: [menu_item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  promotions          promotions           @relation(fields: [promotion_id], references: [promotion_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([menu_category_id], map: "idx_promotion_menu_scopes_category")
-  @@index([menu_item_id], map: "idx_promotion_menu_scopes_item")
-  @@index([promotion_id], map: "idx_promotion_menu_scopes_promotion")
+  menu_item_id     String?   @db.Uuid
+  menu_category_id String?   @db.Uuid
+  scope_role       String    @default("target") @db.VarChar(10)
+  created_at       DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime? @default(now()) @db.Timestamptz(6)
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  promotion_id     String    @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1556,8 +1299,6 @@ model screen_buttons {
   app_screens        app_screens        @relation(fields: [screen_id], references: [id], onDelete: Cascade)
 
   @@id([screen_id, button_id])
-  @@index([button_id], map: "idx_screen_buttons_button")
-  @@index([permission_id], map: "idx_screen_buttons_permission")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1569,7 +1310,6 @@ model screen_permissions {
   app_screens   app_screens @relation(fields: [screen_id], references: [id], onDelete: Cascade)
 
   @@id([screen_id, permission_id])
-  @@index([permission_id], map: "idx_screen_permissions_permission")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1581,7 +1321,6 @@ model screen_roles {
   app_screens app_screens @relation(fields: [screen_id], references: [id], onDelete: Cascade)
 
   @@id([screen_id, role_id])
-  @@index([role_id], map: "idx_screen_roles_role")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1595,79 +1334,55 @@ model stock_adjustment_items {
   unit_cost           Decimal                 @default(0) @db.Decimal(18, 4)
   reason              adjustment_reason_enum?
   created_at          DateTime                @default(now()) @db.Timestamptz(6)
-  product_variants    product_variants        @relation(fields: [product_variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  stock_adjustments   stock_adjustments       @relation(fields: [stock_adjustment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([stock_adjustment_id], map: "idx_stock_adjustment_items_adjustment_id")
-  @@index([product_variant_id], map: "idx_stock_adjustment_items_variant_id")
+  batch_id            String?                 @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model stock_adjustments {
-  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id              String                   @db.Uuid
-  store_id               String                   @db.Uuid
-  status                 adjustment_status_enum   @default(draft)
-  type                   adjustment_type_enum
-  notes                  String?
-  created_by             String?
-  approved_by            String?
-  approved_at            DateTime?                @db.Timestamptz(6)
-  created_at             DateTime                 @default(now()) @db.Timestamptz(6)
-  updated_at             DateTime                 @default(now()) @db.Timestamptz(6)
-  auth_user_id           String?                  @default(dbgenerated("auth.uid()")) @db.Uuid
-  stock_adjustment_items stock_adjustment_items[]
-  stores                 stores                   @relation(fields: [store_id], references: [store_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([status], map: "idx_stock_adjustments_status")
-  @@index([store_id], map: "idx_stock_adjustments_store_id")
-  @@index([tenant_id], map: "idx_stock_adjustments_tenant_id")
+  id           String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String                 @db.Uuid
+  store_id     String                 @db.Uuid
+  status       adjustment_status_enum @default(draft)
+  type         adjustment_type_enum
+  notes        String?
+  created_by   String?
+  approved_by  String?
+  approved_at  DateTime?              @db.Timestamptz(6)
+  created_at   DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime               @default(now()) @db.Timestamptz(6)
+  auth_user_id String?                @default(dbgenerated("auth.uid()")) @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model stock_transfer_items {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  stock_transfer_id  String           @db.Uuid
-  product_variant_id String           @db.Uuid
-  qty                Decimal          @db.Decimal(18, 4)
-  unit_cost          Decimal          @default(0) @db.Decimal(18, 4)
-  created_at         DateTime         @default(now()) @db.Timestamptz(6)
-  product_variants   product_variants @relation(fields: [product_variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  stock_transfers    stock_transfers  @relation(fields: [stock_transfer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([stock_transfer_id], map: "idx_stock_transfer_items_transfer_id")
-  @@index([product_variant_id], map: "idx_stock_transfer_items_variant_id")
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stock_transfer_id  String   @db.Uuid
+  product_variant_id String   @db.Uuid
+  qty                Decimal  @db.Decimal(18, 4)
+  unit_cost          Decimal  @default(0) @db.Decimal(18, 4)
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  batch_id           String?  @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model stock_transfers {
-  id                                                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenant_id                                         String                 @db.Uuid
-  from_store_id                                     String                 @db.Uuid
-  to_store_id                                       String                 @db.Uuid
-  from_branch_id                                    String?                @db.Uuid
-  to_branch_id                                      String?                @db.Uuid
-  status                                            transfer_status_enum   @default(draft)
-  reference_no                                      String?                @db.VarChar(50)
-  notes                                             String?
-  created_by                                        String?
-  shipped_by                                        String?
-  received_by                                       String?
-  shipped_at                                        DateTime?              @db.Timestamptz(6)
-  received_at                                       DateTime?              @db.Timestamptz(6)
-  created_at                                        DateTime               @default(now()) @db.Timestamptz(6)
-  updated_at                                        DateTime               @default(now()) @db.Timestamptz(6)
-  auth_user_id                                      String?                @default(dbgenerated("auth.uid()")) @db.Uuid
-  stock_transfer_items                              stock_transfer_items[]
-  branches_stock_transfers_from_branch_idTobranches branches?              @relation("stock_transfers_from_branch_idTobranches", fields: [from_branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  stores_stock_transfers_from_store_idTostores      stores                 @relation("stock_transfers_from_store_idTostores", fields: [from_store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
-  branches_stock_transfers_to_branch_idTobranches   branches?              @relation("stock_transfers_to_branch_idTobranches", fields: [to_branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  stores_stock_transfers_to_store_idTostores        stores                 @relation("stock_transfers_to_store_idTostores", fields: [to_store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([from_store_id], map: "idx_stock_transfers_from_store_id")
-  @@index([status], map: "idx_stock_transfers_status")
-  @@index([tenant_id], map: "idx_stock_transfers_tenant_id")
-  @@index([to_store_id], map: "idx_stock_transfers_to_store_id")
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id      String               @db.Uuid
+  from_store_id  String               @db.Uuid
+  to_store_id    String               @db.Uuid
+  from_branch_id String?              @db.Uuid
+  to_branch_id   String?              @db.Uuid
+  status         transfer_status_enum @default(draft)
+  reference_no   String?              @db.VarChar(50)
+  notes          String?
+  created_by     String?
+  shipped_by     String?
+  received_by    String?
+  shipped_at     DateTime?            @db.Timestamptz(6)
+  received_at    DateTime?            @db.Timestamptz(6)
+  created_at     DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime             @default(now()) @db.Timestamptz(6)
+  auth_user_id   String?              @default(dbgenerated("auth.uid()")) @db.Uuid
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1678,10 +1393,8 @@ model tenant_activity_types {
   created_at              DateTime?               @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?               @default(now()) @db.Timestamptz(6)
   business_activity_types business_activity_types @relation(fields: [activity_type_id], references: [id], onDelete: Cascade)
-  tenant_subscriptions    tenant_subscriptions    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
 
   @@id([tenant_id, activity_type_id])
-  @@index([activity_type_id], map: "idx_tenant_activity_types_activity")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -1695,7 +1408,294 @@ model user_permissions {
   tenant_users   tenant_users @relation(fields: [tenant_user_id], references: [id], onDelete: Cascade)
 
   @@id([tenant_user_id, permission_id])
-  @@index([permission_id], map: "idx_user_permissions_permission")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model addresses {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String?   @db.Uuid
+  address_type String?   @default("billing") @db.VarChar(30)
+  line1        String?   @db.VarChar(255)
+  line2        String?   @db.VarChar(255)
+  city         String?   @db.VarChar(100)
+  state        String?   @db.VarChar(100)
+  postal_code  String?   @db.VarChar(20)
+  country      String?   @db.VarChar(100)
+  country_id   String?   @db.Uuid
+  latitude     Decimal?  @db.Decimal
+  longitude    Decimal?  @db.Decimal
+  is_default   Boolean?  @default(false)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  auth_user_id String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model brands {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String     @db.Uuid
+  name         String     @db.VarChar(120)
+  code         String?    @db.VarChar(30)
+  logo_url     String?
+  description  String?
+  is_active    Boolean    @default(true)
+  created_at   DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime   @default(now()) @db.Timestamptz(6)
+  auth_user_id String?    @default(dbgenerated("auth.uid()")) @db.Uuid
+  products     products[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model bundle_components {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id            String   @db.Uuid
+  component_variant_id String   @db.Uuid
+  qty                  Decimal  @default(1) @db.Decimal(18, 4)
+  uom_id               String?  @db.Uuid
+  sort_order           Int      @default(0)
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @default(now()) @db.Timestamptz(6)
+  auth_user_id         String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+  parent_product_id    String   @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model goods_receipt_items {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  goods_receipt_id       String    @db.Uuid
+  product_variant_id     String    @db.Uuid
+  qty_received           Decimal   @db.Decimal(18, 4)
+  uom_id                 String?   @db.Uuid
+  unit_cost              Decimal   @default(0) @db.Decimal(18, 4)
+  warehouse_location_id  String?   @db.Uuid
+  batch_id               String?   @db.Uuid
+  batch_number           String?   @db.VarChar(60)
+  expiry_date            DateTime? @db.Date
+  serial_numbers         Json?
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  purchase_order_item_id String?   @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model goods_receipts {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id         String              @db.Uuid
+  receipt_number    String              @default(dbgenerated("('GR-'::text || lpad((nextval('goods_receipts_seq'::regclass))::text, 6, '0'::text))")) @db.VarChar(30)
+  store_id          String              @db.Uuid
+  warehouse_id      String?             @db.Uuid
+  status            receipt_status_enum @default(draft)
+  received_date     DateTime            @default(now()) @db.Timestamptz(6)
+  notes             String?
+  created_by        String?
+  posted_by         String?
+  posted_at         DateTime?           @db.Timestamptz(6)
+  created_at        DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime            @default(now()) @db.Timestamptz(6)
+  auth_user_id      String?             @default(dbgenerated("auth.uid()")) @db.Uuid
+  purchase_order_id String?             @db.Uuid
+  supplier_id       String?             @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model inventory_movement_serials {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  movement_id String   @db.Uuid
+  serial_id   String   @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model product_barcodes {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String   @db.Uuid
+  product_variant_id String   @db.Uuid
+  barcode            String   @db.VarChar(64)
+  barcode_type       String   @default("EAN13") @db.VarChar(20)
+  uom_id             String?  @db.Uuid
+  qty_per_scan       Decimal  @default(1) @db.Decimal(18, 4)
+  is_primary         Boolean  @default(false)
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @default(now()) @db.Timestamptz(6)
+  auth_user_id       String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model product_batches {
+  id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id               String            @db.Uuid
+  product_variant_id      String            @db.Uuid
+  batch_number            String            @db.VarChar(60)
+  manufacture_date        DateTime?         @db.Date
+  expiry_date             DateTime?         @db.Date
+  unit_cost               Decimal           @default(0) @db.Decimal(18, 4)
+  status                  batch_status_enum @default(active)
+  received_reference_type String?           @db.VarChar(40)
+  received_reference_id   String?           @db.Uuid
+  notes                   String?
+  created_at              DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime          @default(now()) @db.Timestamptz(6)
+  auth_user_id            String?           @default(dbgenerated("auth.uid()")) @db.Uuid
+  supplier_id             String?           @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model product_serials {
+  id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id               String             @db.Uuid
+  product_variant_id      String             @db.Uuid
+  batch_id                String?            @db.Uuid
+  serial_number           String             @db.VarChar(80)
+  status                  serial_status_enum @default(in_stock)
+  store_id                String?            @db.Uuid
+  warehouse_location_id   String?            @db.Uuid
+  unit_cost               Decimal            @default(0) @db.Decimal(18, 4)
+  received_at             DateTime?          @db.Timestamptz(6)
+  sold_at                 DateTime?          @db.Timestamptz(6)
+  received_reference_type String?            @db.VarChar(40)
+  received_reference_id   String?            @db.Uuid
+  last_reference_type     String?            @db.VarChar(40)
+  last_reference_id       String?            @db.Uuid
+  warranty_until          DateTime?          @db.Date
+  notes                   String?
+  created_at              DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime           @default(now()) @db.Timestamptz(6)
+  auth_user_id            String?            @default(dbgenerated("auth.uid()")) @db.Uuid
+}
+
+model rbac_audit {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actor_auth_user_id String?  @db.Uuid
+  tenant_id          String?  @db.Uuid
+  action             String   @db.VarChar(100)
+  target_type        String   @db.VarChar(100)
+  target_id          String   @db.VarChar(255)
+  diff               Json?
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at(sort: Desc)], map: "idx_rbac_audit_created_at")
+  @@index([target_type, target_id], map: "idx_rbac_audit_target")
+  @@index([tenant_id, created_at(sort: Desc)], map: "idx_rbac_audit_tenant_created")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model stock_by_location {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id             String    @db.Uuid
+  store_id              String    @db.Uuid
+  warehouse_id          String    @db.Uuid
+  warehouse_location_id String    @db.Uuid
+  product_variant_id    String    @db.Uuid
+  batch_id              String?   @db.Uuid
+  qty_on_hand           Decimal   @default(0) @db.Decimal(18, 4)
+  qty_reserved          Decimal   @default(0) @db.Decimal(18, 4)
+  last_movement_at      DateTime? @db.Timestamptz(6)
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime  @default(now()) @db.Timestamptz(6)
+  auth_user_id          String?   @default(dbgenerated("auth.uid()")) @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenants {
+  id                      String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_code             String                 @unique @db.VarChar(50)
+  name                    String                 @db.VarChar(255)
+  slug                    String                 @unique @db.VarChar(150)
+  display_name            String?                @db.VarChar(255)
+  legal_name              String?                @db.VarChar(255)
+  type                    tenant_type            @default(company)
+  status                  tenant_status          @default(pending)
+  logo_url                String?
+  domain                  String?                @db.VarChar(255)
+  timezone                String                 @default("UTC") @db.VarChar(100)
+  locale                  String                 @default("en-US") @db.VarChar(20)
+  currency_code           String                 @default("LE") @db.Char(3)
+  country_code            String?                @db.VarChar(3)
+  default_branch_id       String?                @db.Uuid
+  current_subscription_id String?                @db.Uuid
+  created_by              String?                @db.Uuid
+  created_at              DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime               @default(now()) @db.Timestamptz(6)
+  deleted_at              DateTime?              @db.Timestamptz(6)
+  metadata                Json                   @default("{}")
+  country_id              String?                @db.Uuid
+  currency_id             String?                @db.Uuid
+  auth_user_id            String?                @db.Uuid
+  onboarding_complete     Boolean?               @default(false)
+  tenant_subscriptions    tenant_subscriptions[]
+  tenant_users            tenant_users[]
+  countries               countries?             @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies              currencies?            @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branches                branches?              @relation(fields: [default_branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([auth_user_id], map: "idx_tenants_auth_user_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model unit_conversions {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id          String   @db.Uuid
+  product_variant_id String?  @db.Uuid
+  from_uom_id        String   @db.Uuid
+  to_uom_id          String   @db.Uuid
+  factor             Decimal  @db.Decimal(18, 6)
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @default(now()) @db.Timestamptz(6)
+  auth_user_id       String?  @default(dbgenerated("auth.uid()")) @db.Uuid
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model uoms {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id    String     @db.Uuid
+  code         String     @db.VarChar(20)
+  name         String     @db.VarChar(80)
+  uom_category String     @default("count") @db.VarChar(30)
+  is_base      Boolean    @default(false)
+  is_active    Boolean    @default(true)
+  created_at   DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime   @default(now()) @db.Timestamptz(6)
+  auth_user_id String?    @default(dbgenerated("auth.uid()")) @db.Uuid
+  products     products[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model warehouse_locations {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id     String             @db.Uuid
+  warehouse_id  String             @db.Uuid
+  parent_id     String?            @db.Uuid
+  location_type location_type_enum
+  code          String             @db.VarChar(50)
+  name          String?            @db.VarChar(120)
+  path          String?
+  is_default    Boolean            @default(false)
+  is_active     Boolean            @default(true)
+  is_pickable   Boolean            @default(true)
+  is_receivable Boolean            @default(true)
+  created_at    DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime           @default(now()) @db.Timestamptz(6)
+  auth_user_id  String?            @default(dbgenerated("auth.uid()")) @db.Uuid
+  warehouses    warehouses         @relation(fields: [warehouse_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model warehouses {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id           String                @db.Uuid
+  branch_id           String?               @db.Uuid
+  store_id            String?               @db.Uuid
+  code                String                @db.VarChar(30)
+  name                String                @db.VarChar(120)
+  is_default          Boolean               @default(false)
+  is_active           Boolean               @default(true)
+  address             String?
+  notes               String?
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime              @default(now()) @db.Timestamptz(6)
+  auth_user_id        String?               @default(dbgenerated("auth.uid()")) @db.Uuid
+  warehouse_locations warehouse_locations[]
+  branches            branches?             @relation(fields: [branch_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  stores              stores?               @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum cash_movement_reason_enum {
@@ -1715,11 +1715,6 @@ enum cash_movement_reason_enum {
 enum cash_movement_type_enum {
   in
   out
-}
-
-enum discount_type {
-  percentage
-  fixed
 }
 
 enum discount_type_enum {
@@ -1752,6 +1747,13 @@ enum movement_type_enum {
   expired
   reserved
   released
+  production_output
+  production_consumption
+  lost
+  found
+  cycle_count_in
+  cycle_count_out
+  reservation_conversion
 }
 
 enum order_item_status {
@@ -1931,4 +1933,133 @@ enum adjustment_type_enum {
   manual
   damage
   stocktake
+}
+
+enum batch_status_enum {
+  active
+  depleted
+  expired
+  blocked
+}
+
+enum location_type_enum {
+  zone
+  rack
+  shelf
+  bin
+}
+
+enum notification_severity {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+}
+
+enum notification_target_type {
+  ALL
+  ROLE
+  USER
+}
+
+enum po_lifecycle_status_enum {
+  draft
+  approved
+  sent
+  partially_received
+  received
+  closed
+  cancelled
+}
+
+enum product_type_enum {
+  simple
+  variant
+  bundle
+  service
+  composite
+}
+
+enum receipt_status_enum {
+  draft
+  posted
+  cancelled
+}
+
+enum reorder_suggestion_status_enum {
+  open
+  converted
+  dismissed
+  expired
+}
+
+enum requisition_status_enum {
+  draft
+  submitted
+  approved
+  rejected
+  converted
+  cancelled
+}
+
+enum sales_order_status_enum {
+  draft
+  confirmed
+  picking
+  packed
+  delivered
+  invoiced
+  completed
+  cancelled
+}
+
+enum serial_status_enum {
+  in_stock
+  reserved
+  sold
+  returned
+  damaged
+  in_transit
+  written_off
+}
+
+enum stock_count_status_enum {
+  draft
+  counting
+  review
+  posted
+  cancelled
+}
+
+enum stock_reservation_status_enum {
+  active
+  consumed
+  released
+  expired
+}
+
+enum tenant_status {
+  pending
+  trial
+  active
+  past_due
+  suspended
+  cancelled
+  archived
+}
+
+enum tenant_type {
+  company
+  restaurant
+  retail
+  warehouse
+  hospital
+  clinic
+  school
+  hotel
+  courier
+  other
+  market
+  pharmacy
+  service
 }

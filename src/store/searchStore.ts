@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { SortOption } from '@/types/product';
 
 interface SearchFilters {
-  categoryId: number | null;
+  categoryId: string | number | null;
   minPrice: number | null;
   maxPrice: number | null;
   sortBy: SortOption;
@@ -18,7 +18,7 @@ interface SearchState {
   setQuery: (query: string) => void;
   setFilters: (filters: Partial<SearchFilters>) => void;
   resetFilters: () => void;
-  setCategoryId: (categoryId: number | null) => void;
+  setCategoryId: (categoryId: string | number | null) => void;
   setPriceRange: (min: number | null, max: number | null) => void;
   setSortBy: (sortBy: SortOption) => void;
   toggleFilterPanel: () => void;

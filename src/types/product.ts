@@ -1,25 +1,27 @@
 // Types for the e-commerce application
 export interface Product {
-  product_id: number;
-  supplier_id: number | null;
+  id?: string;
+  product_id: string | number;
+  supplier_id: string | number | null;
   name: string;
   description: string | null;
   base_price: string;
   cost_price: string;
   sku: string;
   barcode: string | null;
-  category_id: number | null;
+  category_id: string | number | null;
   weight: string | null;
   dimensions: string | null;
-  is_active: boolean;
+  is_active: boolean | null;
   created_at: string;
   updated_at: string;
-  category?: Category;
-  inventory?: Inventory;
+  category?: Category | null;
+  inventory?: Inventory | null;
 }
 
 export interface Category {
-  category_id: number;
+  id?: string;
+  category_id: string | number;
   name: string;
   description: string | null;
   created_at: string;
@@ -28,12 +30,12 @@ export interface Category {
 
 export interface Inventory {
   inventory_id: number;
-  product_id: number;
-  quantity: number;
-  reorder_level: number | null;
-  max_stock_level: number | null;
-  location: string | null;
-  last_restocked: string | null;
+  product_id: string | number | null;
+  quantity: number | null;
+  reorder_level?: number | null;
+  max_stock_level?: number | null;
+  location?: string | null;
+  last_restocked?: string | null;
 }
 
 export interface CartItem {
@@ -148,7 +150,7 @@ export interface CategoriesResponse {
 
 // Filter types
 export interface ProductFilters {
-  category?: number;
+  category?: string | number;
   search?: string;
   minPrice?: number;
   maxPrice?: number;

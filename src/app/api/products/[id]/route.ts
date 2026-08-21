@@ -7,9 +7,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const productId = parseInt(id, 10);
 
-    if (isNaN(productId)) {
+    if (!id) {
       return NextResponse.json(
         { error: 'Invalid product ID' },
         { status: 400 }
@@ -17,7 +16,7 @@ export async function GET(
     }
 
     const product = await prisma.products.findUnique({
-      where: { product_id: productId },
+      where: { id },
       include: {
         categories: true,
         inventory: true,
@@ -33,7 +32,7 @@ export async function GET(
       ? await prisma.products.findMany({
           where: {
             category_id: product.category_id,
-            product_id: { not: productId },
+            id: { not: id },
             is_active: true,
           },
           take: 4,
@@ -46,21 +45,26 @@ export async function GET(
     // Transform to match frontend types
     const transformedProduct = {
       ...product,
+      product_id: product.id,
       base_price: product.base_price?.toString() || '0',
       cost_price: '0',
       weight: product.weight?.toString() || null,
       category: product.categories
         ? {
-            category_id: product.categories.category_id,
+            category_id: product.categories.id,
             name: product.categories.name,
             description: product.categories.description,
             created_at: product.categories.created_at?.toISOString() || '',
           }
         : null,
-      inventory: product.inventory
+      inventory: product.inventory?.length
         ? {
-            ...product.inventory,
-            quantity: product.inventory.quantity,
+            inventory_id: product.inventory[0].inventory_id,
+            product_id: product.id,
+            quantity: product.inventory.reduce(
+              (sum, inv) => sum + (inv.quantity || 0),
+              0
+            ),
           }
         : null,
       created_at: product.created_at?.toISOString() || '',
@@ -69,12 +73,13 @@ export async function GET(
 
     const transformedRelated = relatedProducts.map((p) => ({
       ...p,
+      product_id: p.id,
       base_price: p.base_price?.toString() || '0',
       cost_price: '0',
       weight: p.weight?.toString() || null,
       category: p.categories
         ? {
-            category_id: p.categories.category_id,
+            category_id: p.categories.id,
             name: p.categories.name,
             description: p.categories.description,
             created_at: p.categories.created_at?.toISOString() || '',
